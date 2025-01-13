@@ -12,6 +12,14 @@ const projects = [
     repo: "https://github.com/launchdarkly-labs/ld-core-demo",
     link: "https://aqadri.launchdarklydemos.com/",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-01-12%20at%202.05.02%E2%80%AFPM-lUXiV3L4eeaiblRxJSMqyc2GbboBsi.png"
+  },
+  {
+    title: "Retail Demo App",
+    description: "Retail web app with Feature Flag functionality",
+    technologies: ["NextJS", "LaunchDarkly"],
+    repo: "https://github.com/ahmedhqadri/retail-demo-app",
+    link: "https://github.com/ahmedhqadri/retail-demo-app",
+    image: "/retail-demo-app.png"
   }
 ]
 
