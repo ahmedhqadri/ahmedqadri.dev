@@ -34,7 +34,7 @@ const skills = [
   "Hashing and Caching",
   "Responsive Web Design",
   "Database Optimization and Management",
-  "Testing (Unit, Integration, and E2E)",
+  "Testing (Unit, Integration)",
   "Docker and Containerization",
   "Kubernetes",
   "Serverless Computing",
