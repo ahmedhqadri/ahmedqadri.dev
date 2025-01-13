@@ -10,6 +10,7 @@ const projects = [
     description: "A demonstration project showcasing LaunchDarkly's capabilities.",
     technologies: ["NextJS", "LaunchDarkly", "AWS"],
     repo: "https://github.com/launchdarkly-labs/ld-core-demo",
+    link: "https://aqadri.launchdarklydemos.com/",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-01-12%20at%202.05.02%E2%80%AFPM-lUXiV3L4eeaiblRxJSMqyc2GbboBsi.png"
   }
 ]
@@ -55,18 +56,18 @@ export default function Projects() {
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0 }
               }}
-              className="bg-white/10 backdrop-blur-md rounded-lg p-6 text-white"
+              className="bg-white/10 backdrop-blur-md rounded-lg p-6 text-white shadow-xl"
             >
               <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
               <p className="mb-4">{project.description}</p>
               <div className="mb-6">
                 {project.technologies.map((tech, techIndex) => (
-                  <span key={techIndex} className="inline-block bg-white/20 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">
+                  <span key={techIndex} className="inline-block shadow-md bg-white/20 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">
                     {tech}
                   </span>
                 ))}
               </div>
-              <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-2xl">
+              <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-xl mb-6">
                 <div className="absolute inset-0 bg-gray-800 rounded-t-lg"></div>
                 <div className="absolute inset-x-4 top-4 bottom-8 bg-gray-900 rounded-lg overflow-hidden">
                   <Image
@@ -78,6 +79,9 @@ export default function Projects() {
                     onClick={() => window.open(project.link, '_blank')}
                   />
                 </div>
+              </div>
+              <div className="inline-block shadow-md bg-white/20 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2 hover:bg-transparent/20">
+                <a href={project.repo} target="_blank" rel="noopener noreferrer">Repo Link</a>
               </div>
             </motion.div>
           ))}

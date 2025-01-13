@@ -85,7 +85,7 @@ export default function Skills() {
                 visible: { opacity: 1, scale: 1 }
               }}
             >
-              <Badge variant="secondary" className="text-lg py-2 px-4 bg-white/20 text-white">
+              <Badge variant="secondary" className="text-lg py-2 px-4 bg-white/20 text-white shadow-2xl">
                 {skill}
               </Badge>
             </motion.div>
