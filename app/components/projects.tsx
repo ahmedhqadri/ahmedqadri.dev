@@ -20,7 +20,16 @@ const projects = [
     repo: "https://github.com/ahmedhqadri/retail-demo-app",
     link: "https://github.com/ahmedhqadri/retail-demo-app",
     image: "/retail-demo-app.png"
+  },
+  {
+    title: "Insurance AI Chatbot",
+    description: "AI Chatbot for insurance companies to help customers with their queries.",
+    technologies: ["NextJS", "LaunchDarkly"],
+    repo: "https://github.com/ahmedhqadri/InsuranceBot",
+    link: "https://github.com/ahmedhqadri/InsuranceBot",
+    image: "/insurance-chatbot-app.png"
   }
+
 ]
 
 export default function Projects() {
