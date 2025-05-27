@@ -44,7 +44,7 @@ export default function Header({ activeSection }: HeaderProps) {
         </a>
         <nav>
           <ul className="flex space-x-2">
-            {['projects', 'skills'].map((section) => (
+            {['projects', 'skills', 'hobbies'].map((section) => (
               <li key={section}>
                 <Button
                   variant={activeSection === section ? "secondary" : "ghost"}

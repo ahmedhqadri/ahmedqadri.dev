@@ -6,6 +6,7 @@ import Hero from './components/hero'
 import Projects from './components/projects'
 import Skills from './components/skills'
 import Photography from './components/photography'
+import Hobbies from './components/hobbies'
 import Footer from './components/footer'
 import DynamicCursor from './components/dynamic-cursor'
 
@@ -43,6 +44,7 @@ export default function Home() {
         <Hero />
         <Projects />
         <Skills />
+        <Hobbies />
         {/* <Photography />  */}
       </main>
       <Footer />
@@ -58,6 +60,8 @@ function getBackgroundColor(section: string): string {
       return 'bg-gradient-to-br from-blue-500 to-green-500'
     case 'skills':
       return 'bg-gradient-to-br from-green-500 to-yellow-500'
+    case 'hobbies':
+      return 'bg-gradient-to-br from-yellow-500 to-red-500'
     case 'photography':
       return 'bg-gradient-to-br from-yellow-500 to-red-500'
     default:
