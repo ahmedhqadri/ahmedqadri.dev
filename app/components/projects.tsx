@@ -90,9 +90,8 @@ export default function Projects() {
                   <Image
                     src={project.image}
                     alt={project.title}
-                    layout="fill"
-                    objectFit="cover"
-                    className="cursor-pointer transition-transform duration-300 hover:scale-105"
+                    fill
+                    className="object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
                     onClick={() => window.open(project.link, '_blank')}
                   />
                 </div>
