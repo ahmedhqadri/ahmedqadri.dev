@@ -7,29 +7,28 @@ import Image from 'next/image'
 const projects = [
   {
     title: "Core Demo Application",
-    description: "A demonstration project showcasing LaunchDarkly's capabilities.",
-    technologies: ["NextJS", "LaunchDarkly", "AWS"],
+    description: "LaunchDarkly capabilities demo.",
+    technologies: ["Next.js", "LaunchDarkly", "AWS"],
     repo: "https://github.com/launchdarkly-labs/ld-core-demo",
     link: "https://aqadri.launchdarklydemos.com/",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-01-12%20at%202.05.02%E2%80%AFPM-lUXiV3L4eeaiblRxJSMqyc2GbboBsi.png"
   },
   {
     title: "Retail Demo App",
-    description: "Retail web app with Feature Flag functionality",
-    technologies: ["NextJS", "LaunchDarkly"],
+    description: "Retail web app with feature flags.",
+    technologies: ["Next.js", "LaunchDarkly"],
     repo: "https://github.com/ahmedhqadri/retail-demo-app",
     link: "https://github.com/ahmedhqadri/retail-demo-app",
     image: "/retail-demo-app.png"
   },
   {
     title: "Insurance AI Chatbot",
-    description: "AI Chatbot for insurance companies to help customers with their queries.",
-    technologies: ["NextJS", "LaunchDarkly"],
+    description: "AI chatbot for insurance customer queries.",
+    technologies: ["Next.js", "LaunchDarkly"],
     repo: "https://github.com/ahmedhqadri/InsuranceBot",
     link: "https://github.com/ahmedhqadri/InsuranceBot",
     image: "/insurance-chatbot-app.png"
-  }
-
+  },
 ]
 
 export default function Projects() {
@@ -54,56 +53,83 @@ export default function Projects() {
   }, [controls])
 
   return (
-    <section id="projects" ref={ref} className="min-h-screen py-20 px-4 md:px-6 lg:px-8 flex items-center">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold mb-10 text-center text-white">My Projects</h2>
+    <section id="projects" ref={ref} className="relative z-10 min-h-screen py-24 px-4 md:px-6 lg:px-8 flex items-center">
+      <div className="max-w-7xl mx-auto w-full">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl md:text-4xl font-bold mb-4 text-center text-white"
+        >
+          Projects
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center text-white/60 text-sm md:text-base mb-12"
+        >
+          Selected work
+        </motion.p>
         <motion.div
           initial="hidden"
           animate={controls}
           variants={{
             hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+            visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
           }}
-          className="grid grid-cols-1 gap-12"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {projects.map((project, index) => (
-            <motion.div
+            <motion.article
               key={index}
               variants={{
-                hidden: { opacity: 0, y: 20 },
+                hidden: { opacity: 0, y: 24 },
                 visible: { opacity: 1, y: 0 }
               }}
-              className="bg-white/10 backdrop-blur-md rounded-lg p-6 text-white shadow-xl"
+              className="group rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm overflow-hidden shadow-xl shadow-black/20 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.06]"
             >
-              <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
-              <p className="mb-4">{project.description}</p>
-              <div className="mb-6">
-                {project.technologies.map((tech, techIndex) => (
-                  <span key={techIndex} className="inline-block shadow-md bg-white/20 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2">
-                    {tech}
-                  </span>
-                ))}
+              <div className="relative w-full aspect-video overflow-hidden bg-white/5">
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  onClick={() => window.open(project.link, '_blank')}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
               </div>
-              <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-xl mb-6">
-                <div className="absolute inset-0 bg-gray-800 rounded-t-lg"></div>
-                <div className="absolute inset-x-4 top-4 bottom-8 bg-gray-900 rounded-lg overflow-hidden">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
-                    onClick={() => window.open(project.link, '_blank')}
-                  />
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-white">
+                  {project.title}
+                </h3>
+                <p className="text-sm text-white/70 mb-4 leading-relaxed">
+                  {project.description}
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {project.technologies.map((tech, techIndex) => (
+                    <span
+                      key={techIndex}
+                      className="inline-block rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80"
+                    >
+                      {tech}
+                    </span>
+                  ))}
                 </div>
+                <a
+                  href={project.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-sm font-medium text-white/90 hover:text-white transition-colors"
+                >
+                  View repo →
+                </a>
               </div>
-              <div className="inline-block shadow-md bg-white/20 rounded-full px-3 py-1 text-sm font-semibold text-white mr-2 mb-2 hover:bg-transparent/20">
-                <a href={project.repo} target="_blank" rel="noopener noreferrer">Repo Link</a>
-              </div>
-            </motion.div>
+            </motion.article>
           ))}
         </motion.div>
       </div>
     </section>
   )
 }
-

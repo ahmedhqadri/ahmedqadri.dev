@@ -1,8 +1,7 @@
 "use client"
 
-import { useRef, useEffect } from 'react'
-import { motion, useAnimation } from 'framer-motion'
-import { Badge } from "@/components/ui/badge"
+import { useRef, useEffect, useState, useCallback } from 'react'
+import { motion, useInView } from 'framer-motion'
 
 const skills = [
   "JavaScript",
@@ -11,88 +10,151 @@ const skills = [
   "Next.js",
   "Node.js",
   "Python",
-  "Express.js",
+  "Express",
   "MongoDB",
   "PostgreSQL",
-  "HTML5",
-  "CSS3",
-  "Tailwind CSS",
-  "Git and Version Control",
-  "System Design and Architecture",
-  "AWS (EC2, S3, Lambda, EKS)",
-  "AI and Machine Learning",
-  "Cloud Infrastructure and Deployment",
-  "Application Development and Scaling",
-  "API Design (RESTful and GraphQL)",
-  "Microservices Architecture",
-  "Continuous Integration/Continuous Deployment (CI/CD)",
-  "Performance Optimization and Scaling",
-  "Algorithms and Data Structures",
-  "Dynamic Programming",
-  "Tree and Graph Algorithms",
-  "Sorting and Searching Techniques",
-  "Hashing and Caching",
-  "Responsive Web Design",
-  "Database Optimization and Management",
-  "Testing (Unit, Integration)",
-  "Docker and Containerization",
+  "HTML / CSS",
+  "Tailwind",
+  "Git",
+  "System Design",
+  "AWS",
+  "REST & GraphQL",
+  "Microservices",
+  "CI/CD",
+  "Docker",
   "Kubernetes",
-  "Serverless Computing",
-  "Agile and Scrum Methodologies",
-  "Cross-Functional Team Collaboration",
-  "Problem Solving and Debugging"
+  "Testing",
+  "Agile",
 ]
 
+function SkillChip({ name }: { name: string }) {
+  return (
+    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur-sm whitespace-nowrap shrink-0">
+      {name}
+    </span>
+  )
+}
+
+function ArrowButton({
+  direction,
+  onHoldStart,
+  onHoldEnd,
+}: {
+  direction: 'left' | 'right'
+  onHoldStart: () => void
+  onHoldEnd: () => void
+}) {
+  return (
+    <button
+      onMouseDown={onHoldStart}
+      onMouseUp={onHoldEnd}
+      onMouseLeave={onHoldEnd}
+      onTouchStart={onHoldStart}
+      onTouchEnd={onHoldEnd}
+      className="absolute top-0 bottom-0 z-10 flex items-center justify-center w-10 md:w-12 cursor-pointer select-none transition-opacity opacity-60 hover:opacity-100"
+      style={{
+        [direction === 'left' ? 'left' : 'right']: 0,
+        backgroundImage:
+          direction === 'left'
+            ? 'linear-gradient(to right, rgba(10,10,10,0.95), transparent)'
+            : 'linear-gradient(to left, rgba(10,10,10,0.95), transparent)',
+      }}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="w-4 h-4 text-white/70"
+      >
+        {direction === 'left' ? (
+          <polyline points="15 18 9 12 15 6" />
+        ) : (
+          <polyline points="9 6 15 12 9 18" />
+        )}
+      </svg>
+    </button>
+  )
+}
+
+const BASE_PX_PER_SECOND = 40
+const FAST_MULTIPLIER = 4
+
 export default function Skills() {
-  const controls = useAnimation()
-  const ref = useRef(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const stripRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(sectionRef, { amount: 0.2 })
+  const offsetRef = useRef(0)
+  const speedRef = useRef(1)
+  const rafRef = useRef<number>(0)
+  const lastTimeRef = useRef<number>(0)
+
+  const holdLeft = useCallback(() => { speedRef.current = -FAST_MULTIPLIER }, [])
+  const holdRight = useCallback(() => { speedRef.current = FAST_MULTIPLIER }, [])
+  const release = useCallback(() => { speedRef.current = 1 }, [])
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          controls.start('visible')
-        }
-      },
-      { threshold: 0.1 }
-    )
+    const strip = stripRef.current
+    if (!strip) return
 
-    if (ref.current) {
-      observer.observe(ref.current)
+    const tick = (now: number) => {
+      if (!lastTimeRef.current) lastTimeRef.current = now
+      const dt = (now - lastTimeRef.current) / 1000
+      lastTimeRef.current = now
+
+      if (isInView) {
+        offsetRef.current += BASE_PX_PER_SECOND * speedRef.current * dt
+
+        const halfWidth = strip.scrollWidth / 2
+        if (halfWidth > 0) {
+          if (offsetRef.current >= halfWidth) offsetRef.current -= halfWidth
+          if (offsetRef.current < 0) offsetRef.current += halfWidth
+        }
+
+        strip.style.transform = `translateX(-${offsetRef.current}px)`
+      }
+
+      rafRef.current = requestAnimationFrame(tick)
     }
 
-    return () => observer.disconnect()
-  }, [controls])
+    rafRef.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [isInView])
+
+  const duplicated = [...skills, ...skills]
 
   return (
-    <section id="skills" ref={ref} className="min-h-screen py-20 px-4 md:px-6 lg:px-8 flex items-center">
+    <section id="skills" ref={sectionRef} className="relative z-10 py-24 px-4 md:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold mb-10 text-center text-white">My Skills</h2>
-        <motion.div
-          initial="hidden"
-          animate={controls}
-          variants={{
-            hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-          }}
-          className="flex flex-wrap justify-center gap-4"
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl md:text-4xl font-bold text-center text-white mb-10"
         >
-          {skills.map((skill, index) => (
-            <motion.div
-              key={index}
-              variants={{
-                hidden: { opacity: 0, scale: 0.8 },
-                visible: { opacity: 1, scale: 1 }
-              }}
+          Skills & tools
+        </motion.h2>
+
+        <div className="relative">
+          <ArrowButton direction="left" onHoldStart={holdLeft} onHoldEnd={release} />
+          <ArrowButton direction="right" onHoldStart={holdRight} onHoldEnd={release} />
+
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] py-4">
+            <div
+              ref={stripRef}
+              className="flex gap-4 w-max will-change-transform"
             >
-              <Badge variant="secondary" className="text-lg py-2 px-4 bg-white/20 text-white shadow-2xl">
-                {skill}
-              </Badge>
-            </motion.div>
-          ))}
-        </motion.div>
+              {duplicated.map((skill, i) => (
+                <SkillChip key={`${skill}-${i}`} name={skill} />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   )
 }
-
