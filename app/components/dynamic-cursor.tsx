@@ -19,11 +19,10 @@ export default function DynamicCursor() {
 
   return (
     <div
-      className="fixed inset-0 pointer-events-none z-50"
+      className="fixed inset-0 pointer-events-none z-[1]"
       style={{
-        background: `radial-gradient(600px at ${position.x}px ${position.y}px, rgba(29, 78, 216, 0.15), transparent 80%)`,
+        background: `radial-gradient(700px at ${position.x}px ${position.y}px, rgba(255,255,255,0.07), rgba(255,255,255,0.02) 40%, transparent 70%)`,
       }}
     />
   )
 }
-
