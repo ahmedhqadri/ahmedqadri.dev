@@ -1,175 +1,205 @@
 "use client"
 
-import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { ArrowUpRight } from 'lucide-react'
+import { Button } from './ds/button'
+import { Eyebrow } from './ds/eyebrow'
+import { SOCIAL_LINKS } from './social-links'
 
-const NAME = "Ahmed"
-const TAGLINE = "Full-stack developer building scalable, user-focused applications."
-
-const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1]
-
-const letterVariants = {
-  hidden: { opacity: 0, y: 80, rotateX: -40 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    rotateX: 0,
-    transition: {
-      delay: 0.3 + i * 0.08,
-      duration: 0.8,
-      ease: EASE_OUT,
-    },
-  }),
-}
-
-const buttonVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      delay: 1.0 + i * 0.12,
-      duration: 0.6,
-      ease: EASE_OUT,
-    },
-  }),
-}
-
-const socialLinks = [
-  {
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/ahmedhqadri/',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.58c-1.14 0-2.06-.92-2.06-2.06s.92-2.06 2.06-2.06 2.06.92 2.06 2.06-.92 2.06-2.06 2.06zM20.45 20.45h-3.56v-5.6c0-1.34-.03-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.97v5.69h-3.56V9h3.42v1.56h.05c.48-.9 1.66-1.85 3.42-1.85 3.66 0 4.34 2.41 4.34 5.54v6.2z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'GitHub',
-    href: 'https://github.com/ahmedhqadri',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.207 11.387.6.11.793-.26.793-.577v-2.17c-3.338.726-4.033-1.61-4.033-1.61-.546-1.387-1.333-1.757-1.333-1.757-1.09-.746.083-.73.083-.73 1.205.084 1.84 1.237 1.84 1.237 1.07 1.835 2.807 1.305 3.492.997.108-.775.42-1.305.763-1.605-2.665-.3-5.467-1.332-5.467-5.93 0-1.31.467-2.38 1.235-3.22-.123-.303-.535-1.523.117-3.176 0 0 1.007-.322 3.3 1.23a11.52 11.52 0 013.003-.403c1.02.005 2.045.137 3.003.403 2.29-1.552 3.297-1.23 3.297-1.23.653 1.653.24 2.873.117 3.176.77.84 1.233 1.91 1.233 3.22 0 4.61-2.807 5.625-5.48 5.92.43.37.823 1.102.823 2.222v3.293c0 .32.19.694.8.576C20.565 21.797 24 17.297 24 12c0-6.63-5.37-12-12-12z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Photography',
-    href: 'https://vsco.co/aqlens',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <circle cx="12" cy="12" r="10" />
-        <circle cx="12" cy="12" r="6" />
-        <line x1="12" y1="2" x2="12" y2="6" />
-        <line x1="12" y1="18" x2="12" y2="22" />
-        <line x1="2" y1="12" x2="6" y2="12" />
-        <line x1="18" y1="12" x2="22" y2="12" />
-      </svg>
-    ),
-  },
-]
+const TAGLINE = 'Full-stack developer building scalable, user-focused applications.'
 
 export default function Hero() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  })
-
-  // Parallax: content moves up faster than the section
-  const y = useTransform(scrollYProgress, [0, 1], [0, -120])
-  const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
+  const [primary, ...secondary] = SOCIAL_LINKS
 
   return (
     <section
-      id="hero"
-      ref={sectionRef}
-      className="relative z-10 min-h-screen flex items-center justify-center py-24 px-4 md:px-6 lg:px-8 text-center overflow-hidden"
+      id="top"
+      style={{
+        position: 'relative',
+        minHeight: '100vh',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        padding: 'calc(var(--space-14) + 40px) var(--gutter) var(--space-12)',
+        background: 'radial-gradient(120% 90% at 70% 0%, #0d1720 0%, var(--ink-950) 60%)',
+      }}
     >
-      <motion.div
-        style={{ y, opacity }}
-        className="max-w-4xl mx-auto"
+      {/* Grid floor */}
+      <div aria-hidden data-depth="0.05" className="aq-grid-floor" style={{ position: 'absolute', inset: 0 }} />
+
+      {/* Parallax glow orbs — aqua signature, indigo counterweight */}
+      <div
+        aria-hidden
+        data-depth="0.18"
+        style={{
+          position: 'absolute',
+          top: '8%',
+          right: '6%',
+          width: 460,
+          height: 460,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(0,224,198,0.30), transparent 62%)',
+          filter: 'blur(20px)',
+        }}
+      />
+      <div
+        aria-hidden
+        data-depth="0.3"
+        style={{
+          position: 'absolute',
+          bottom: '4%',
+          left: '-4%',
+          width: 340,
+          height: 340,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(110,139,255,0.22), transparent 65%)',
+          filter: 'blur(24px)',
+        }}
+      />
+
+      <div
+        className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center"
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: 'var(--container-wide)',
+          margin: '0 auto',
+          gap: 'var(--space-9)',
+        }}
       >
-        {/* Greeting */}
-        <motion.p
-          initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ delay: 0.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="text-sm md:text-base text-white/40 mb-4 font-medium tracking-[0.2em] uppercase"
-        >
-          Hi, I&apos;m
-        </motion.p>
+        <div className="aq-reveal">
+          <Eyebrow hue="aqua">Hi, I&apos;m</Eyebrow>
 
-        {/* Name — character-by-character staggered reveal with gradient */}
-        <h1 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight mb-6 font-display"
-            style={{ perspective: '500px' }}
-        >
-          {NAME.split('').map((char, i) => (
-            <motion.span
-              key={i}
-              custom={i}
-              variants={letterVariants}
-              initial="hidden"
-              animate="visible"
-              className="inline-block text-gradient"
-            >
-              {char}
-            </motion.span>
-          ))}
-        </h1>
+          <h1
+            style={{
+              margin: '20px 0 0',
+              fontFamily: 'var(--font-display)',
+              fontWeight: 500,
+              fontSize: 'var(--display-hero)',
+              lineHeight: 0.98,
+              letterSpacing: '-0.035em',
+              color: 'var(--text-strong)',
+            }}
+          >
+            Ahmed
+            <br />
+            Qadri<span style={{ color: 'var(--aqua-500)' }}>.</span>
+          </h1>
 
-        {/* Tagline — blur-to-sharp fade-in */}
-        <motion.p
-          initial={{ opacity: 0, y: 20, filter: 'blur(12px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ delay: 0.9, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="text-base md:text-lg lg:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed mb-10"
-        >
-          {TAGLINE}
-        </motion.p>
+          <p
+            style={{
+              margin: '26px 0 0',
+              maxWidth: '46ch',
+              fontFamily: 'var(--font-sans)',
+              fontSize: 'var(--text-xl)',
+              lineHeight: 1.5,
+              color: 'var(--text-body)',
+              textWrap: 'pretty',
+            }}
+          >
+            {TAGLINE}
+          </p>
 
-        {/* CTA Buttons — glassmorphic with stagger */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          {socialLinks.map((link, i) => (
-            <motion.a
-              key={link.label}
-              custom={i}
-              variants={buttonVariants}
-              initial="hidden"
-              animate="visible"
-              href={link.href}
+          <div style={{ display: 'flex', gap: 14, marginTop: 34, flexWrap: 'wrap' }}>
+            <Button
+              variant="primary"
+              size="lg"
+              href={primary.href}
               target="_blank"
               rel="noopener noreferrer"
-              data-magnetic
-              className="group relative flex items-center gap-2.5 px-6 py-3 rounded-full glass text-sm font-medium text-white/80 transition-all duration-300 hover:text-white hover:bg-white/[0.08] hover:shadow-[0_0_30px_rgba(99,152,255,0.15)] hover:border-white/20"
+              iconLeft={primary.icon}
+              iconRight={<ArrowUpRight size={20} strokeWidth={2} />}
             >
-              <span className="transition-transform duration-300 group-hover:scale-110">
-                {link.icon}
-              </span>
-              {link.label}
-              {/* Hover gradient underline */}
-              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent transition-all duration-300 group-hover:w-3/4" />
-            </motion.a>
-          ))}
+              {primary.label}
+            </Button>
+            {secondary.map((link) => (
+              <Button
+                key={link.label}
+                variant="secondary"
+                size="lg"
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                iconLeft={link.icon}
+              >
+                {link.label}
+              </Button>
+            ))}
+          </div>
         </div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.8, duration: 0.6 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span className="text-[10px] tracking-[0.2em] uppercase text-white/25">Scroll</span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-            className="w-px h-8 bg-gradient-to-b from-white/20 to-transparent"
-          />
-        </motion.div>
-      </motion.div>
+        {/* Floating code mock */}
+        <div data-depth="0.12" className="hidden lg:block aq-reveal" style={{ position: 'relative' }}>
+          <div
+            style={{
+              position: 'relative',
+              background: 'var(--ink-800)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-xl)',
+              padding: 18,
+              boxShadow: 'var(--shadow-xl)',
+            }}
+          >
+            <div style={{ display: 'flex', gap: 7, marginBottom: 14 }}>
+              {['var(--coral-500)', 'var(--sun-500)', 'var(--aqua-500)'].map((c) => (
+                <span key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
+              ))}
+            </div>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 13,
+                lineHeight: 1.8,
+                color: 'var(--text-muted)',
+              }}
+            >
+              <div>
+                <span style={{ color: 'var(--indigo-500)' }}>const</span>{' '}
+                <span style={{ color: 'var(--text-strong)' }}>ahmed</span> ={' '}
+                <span style={{ color: 'var(--aqua-300)' }}>developer</span>({'{'}
+              </div>
+              <div style={{ paddingLeft: 20 }}>
+                stack: [<span style={{ color: 'var(--coral-500)' }}>&apos;TypeScript&apos;</span>,{' '}
+                <span style={{ color: 'var(--coral-500)' }}>&apos;React&apos;</span>],
+              </div>
+              <div style={{ paddingLeft: 20 }}>
+                also: [<span style={{ color: 'var(--coral-500)' }}>&apos;Node&apos;</span>,{' '}
+                <span style={{ color: 'var(--coral-500)' }}>&apos;Python&apos;</span>,{' '}
+                <span style={{ color: 'var(--coral-500)' }}>&apos;AWS&apos;</span>],
+              </div>
+              <div style={{ paddingLeft: 20 }}>
+                builds: <span style={{ color: 'var(--coral-500)' }}>&apos;scalable, user-focused apps&apos;</span>,
+              </div>
+              <div>{'}'});</div>
+              <div style={{ marginTop: 10, color: 'var(--aqua-500)' }}>→ github.com/ahmedhqadri</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll cue */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          bottom: 26,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 10,
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: 'var(--text-faint)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
+        Scroll
+        <span
+          style={{ width: 1, height: 30, background: 'linear-gradient(var(--aqua-500), transparent)' }}
+        />
+      </div>
     </section>
   )
 }

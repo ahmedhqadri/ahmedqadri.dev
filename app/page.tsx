@@ -7,13 +7,17 @@ import Hero from './components/hero'
 import Projects from './components/projects'
 import Skills from './components/skills'
 import Footer from './components/footer'
-import CursorCanvas from './components/cursor-canvas'
-import AmbientBackground from './components/ambient-background'
+import { useParallax, useReveal } from './components/ds/motion'
 
 export default function Home() {
-  const [activeSection, setActiveSection] = useState('hero')
+  const [activeSection, setActiveSection] = useState('top')
 
-  // Scroll progress for top indicator
+  // Parallax is the signature: [data-depth] layers translate on scroll,
+  // and sections fade up 24px as they enter view.
+  useParallax()
+  useReveal()
+
+  // Scroll progress for the top indicator
   const { scrollYProgress } = useScroll()
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -22,50 +26,33 @@ export default function Home() {
   })
 
   useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.4,
-    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id)
+        })
+      },
+      { root: null, rootMargin: '0px', threshold: 0.4 },
+    )
 
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id)
-        }
-      })
-    }
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions)
-
-    const sections = document.querySelectorAll('section')
-    sections.forEach((section) => observer.observe(section))
-
+    document.querySelectorAll('section').forEach((section) => observer.observe(section))
     return () => observer.disconnect()
   }, [])
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
-      {/* Ambient background (particles + grid) */}
-      <AmbientBackground />
-
-      {/* Canvas cursor (particles + dot) */}
-      <CursorCanvas />
-
-      {/* Scroll progress bar */}
+    <div className="relative min-h-screen overflow-x-hidden">
+      {/* Scroll progress — the aqua thread */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-[2px] z-[100] origin-left"
         style={{
           scaleX,
-          background: 'linear-gradient(90deg, rgba(99, 152, 255, 0.8), rgba(155, 93, 229, 0.8))',
+          background: 'linear-gradient(90deg, var(--aqua-500), var(--indigo-500))',
         }}
       />
 
-      {/* Navigation */}
       <Header activeSection={activeSection} />
 
-      {/* Content */}
-      <main className="relative z-10">
+      <main>
         <Hero />
         <Projects />
         <Skills />

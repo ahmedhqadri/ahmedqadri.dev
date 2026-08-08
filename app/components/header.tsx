@@ -1,121 +1,235 @@
 "use client"
 
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import Image from "next/image"
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { ArrowRight, Menu, X } from 'lucide-react'
+import { Button } from './ds/button'
+import { scrollToSection } from './ds/motion'
 
 interface HeaderProps {
   activeSection: string
 }
 
-const NAV_ITEMS = ['projects', 'skills'] as const
+const NAV_ITEMS: [label: string, id: string][] = [
+  ['Projects', 'projects'],
+  ['Skills', 'skills'],
+]
+
+const CONTACT_HREF = 'https://www.linkedin.com/in/ahmedhqadri/'
 
 export default function Header({ activeSection }: HeaderProps) {
-  const [mounted, setMounted] = useState(false)
-  const [visible, setVisible] = useState(true)
-  const lastScrollY = useRef(0)
+  const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
 
+  // Fixed glass bar that shrinks and frosts once you leave the hero.
   useEffect(() => {
-    setMounted(true)
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Directional scroll — hide on scroll down, show on scroll up
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentY = window.scrollY
-      if (currentY < 100) {
-        setVisible(true)
-      } else if (currentY > lastScrollY.current + 5) {
-        setVisible(false)
-      } else if (currentY < lastScrollY.current - 5) {
-        setVisible(true)
-      }
-      lastScrollY.current = currentY
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  const scrollTo = (id: string) => {
-    const element = document.getElementById(id)
-    element?.scrollIntoView({ behavior: 'smooth' })
+  const go = (id: string) => {
+    setOpen(false)
+    scrollToSection(id)
   }
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.header
-          initial={{ y: -80, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -80, opacity: 0 }}
-          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed top-4 inset-x-0 z-50 flex justify-center pointer-events-none"
+    <header
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: scrolled ? '12px var(--gutter)' : '20px var(--gutter)',
+        background: scrolled ? 'var(--glass-ink)' : 'transparent',
+        backdropFilter: scrolled ? 'var(--blur-glass)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'var(--blur-glass)' : 'none',
+        borderBottom: scrolled ? '1px solid var(--border-subtle)' : '1px solid transparent',
+        transition: 'all var(--dur-base) var(--ease-out)',
+      }}
+    >
+      {/* Wordmark */}
+      <a
+        href="#top"
+        onClick={(e) => {
+          e.preventDefault()
+          go('top')
+        }}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 11, textDecoration: 'none' }}
+      >
+        <span
+          style={{
+            position: 'relative',
+            width: 30,
+            height: 30,
+            borderRadius: 9,
+            overflow: 'hidden',
+            border: '1px solid var(--border-strong)',
+            boxShadow: 'var(--glow-aqua-soft)',
+            flexShrink: 0,
+          }}
         >
-          <nav
-            className="pointer-events-auto flex items-center gap-1 px-2 py-1.5 rounded-full glass-strong shadow-lg shadow-black/30"
-            data-magnetic
-          >
-            {/* Avatar / Home */}
-            <button
-              onClick={() => scrollTo('hero')}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 hover:bg-white/[0.08] group"
-              data-magnetic
+          <Image
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1688941303542-oAaKLRq68e0AFoRmz9sZKaKC2l4Atb.jpeg"
+            alt="Ahmed Qadri"
+            fill
+            className="object-cover"
+            sizes="30px"
+            priority
+          />
+        </span>
+        <span
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontWeight: 600,
+            fontSize: 19,
+            letterSpacing: '-0.03em',
+            color: 'var(--text-strong)',
+          }}
+        >
+          Ahmed<span style={{ color: 'var(--aqua-500)' }}>·</span>Qadri
+        </span>
+      </a>
+
+      {/* Desktop nav */}
+      <nav className="hidden md:flex items-center gap-1">
+        {NAV_ITEMS.map(([label, id]) => {
+          const active = activeSection === id
+          return (
+            <a
+              key={id}
+              href={`#${id}`}
+              onClick={(e) => {
+                e.preventDefault()
+                go(id)
+              }}
+              style={{
+                position: 'relative',
+                padding: '8px 14px',
+                fontFamily: 'var(--font-sans)',
+                fontSize: 15,
+                fontWeight: 500,
+                color: active ? 'var(--text-strong)' : 'var(--text-body)',
+                textDecoration: 'none',
+                borderRadius: 'var(--radius-sm)',
+                transition: 'color var(--dur-fast) var(--ease-out)',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-strong)')}
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = active ? 'var(--text-strong)' : 'var(--text-body)')
+              }
             >
-              <div className="relative w-7 h-7 overflow-hidden rounded-full ring-1 ring-white/20 transition-all group-hover:ring-white/40 group-hover:shadow-[0_0_10px_rgba(99,152,255,0.3)]">
-                <Image
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1688941303542-oAaKLRq68e0AFoRmz9sZKaKC2l4Atb.jpeg"
-                  alt="Ahmed Qadri"
-                  fill
-                  className="object-cover"
-                  sizes="28px"
-                  priority
+              {label}
+              {active && (
+                <span
+                  aria-hidden
+                  style={{
+                    position: 'absolute',
+                    left: 14,
+                    right: 14,
+                    bottom: 2,
+                    height: 1,
+                    background: 'var(--aqua-500)',
+                    boxShadow: '0 0 10px var(--aqua-500)',
+                  }}
                 />
-              </div>
-              {mounted && (
-                <span className="hidden sm:inline text-xs font-medium text-white/80 group-hover:text-white transition-colors">
-                  Ahmed
-                </span>
               )}
-            </button>
+            </a>
+          )
+        })}
+        <div style={{ marginLeft: 10 }}>
+          <Button
+            variant="primary"
+            size="sm"
+            href={CONTACT_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
+            iconRight={<ArrowRight size={16} strokeWidth={2} />}
+          >
+            Get in touch
+          </Button>
+        </div>
+      </nav>
 
-            {/* Divider */}
-            <div className="w-px h-4 bg-white/10" />
+      {/* Mobile trigger */}
+      <button
+        type="button"
+        aria-label={open ? 'Close menu' : 'Open menu'}
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
+        className="inline-flex md:hidden"
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 42,
+          height: 42,
+          borderRadius: 'var(--radius-md)',
+          background: 'transparent',
+          border: '1px solid var(--border-strong)',
+          color: 'var(--text-strong)',
+          cursor: 'pointer',
+        }}
+      >
+        {open ? <X size={20} strokeWidth={2} /> : <Menu size={20} strokeWidth={2} />}
+      </button>
 
-            {/* Nav items with animated indicator */}
-            <div className="flex items-center gap-0.5 relative">
-              {NAV_ITEMS.map((section) => (
-                <button
-                  key={section}
-                  onClick={() => scrollTo(section)}
-                  className="relative px-4 py-1.5 text-xs font-medium transition-colors duration-200 rounded-full"
-                  data-magnetic
-                >
-                  {/* Animated background pill */}
-                  {activeSection === section && (
-                    <motion.div
-                      layoutId="nav-active"
-                      className="absolute inset-0 bg-white/10 rounded-full"
-                      transition={{
-                        type: 'spring',
-                        stiffness: 400,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-                  <span className={`relative z-10 transition-colors ${
-                    activeSection === section
-                      ? 'text-white'
-                      : 'text-white/50 hover:text-white/80'
-                  }`}>
-                    {section.charAt(0).toUpperCase() + section.slice(1)}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </nav>
-        </motion.header>
+      {/* Mobile sheet */}
+      {open && (
+        <div
+          className="flex md:hidden"
+          style={{
+            position: 'fixed',
+            top: 68,
+            left: 'var(--gutter)',
+            right: 'var(--gutter)',
+            background: 'var(--surface-raised)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: 'var(--radius-lg)',
+            padding: 12,
+            boxShadow: 'var(--shadow-lg)',
+            flexDirection: 'column',
+            gap: 2,
+          }}
+        >
+          {NAV_ITEMS.map(([label, id]) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              onClick={(e) => {
+                e.preventDefault()
+                go(id)
+              }}
+              style={{
+                padding: '12px 14px',
+                fontFamily: 'var(--font-sans)',
+                fontSize: 16,
+                color: 'var(--text-body)',
+                textDecoration: 'none',
+                borderRadius: 'var(--radius-sm)',
+              }}
+            >
+              {label}
+            </a>
+          ))}
+          <div style={{ padding: 8 }}>
+            <Button
+              variant="primary"
+              fullWidth
+              href={CONTACT_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+            >
+              Get in touch
+            </Button>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
+    </header>
   )
 }
