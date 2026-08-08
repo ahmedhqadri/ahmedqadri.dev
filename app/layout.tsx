@@ -1,18 +1,29 @@
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
-import { Syne, Inter } from 'next/font/google'
+import { Space_Grotesk, Instrument_Sans, Space_Mono } from 'next/font/google'
 import './globals.css'
 
-const syne = Syne({
+/* AQ Studios type system:
+   Display — Space Grotesk · Body — Instrument Sans · Mono — Space Mono */
+
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-syne',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-space-grotesk',
 })
 
-const inter = Inter({
+const instrumentSans = Instrument_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-instrument-sans',
+})
+
+const spaceMono = Space_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '700'],
+  variable: '--font-space-mono',
 })
 
 export const metadata: Metadata = {
@@ -36,8 +47,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${syne.variable} ${inter.variable}`}>
+    <html
+      lang="en"
+      className={`${spaceGrotesk.variable} ${instrumentSans.variable} ${spaceMono.variable}`}
+    >
       <body className="font-sans antialiased">
+        {/* Reveal-on-scroll starts at opacity 0; without JS it never fires. */}
+        <noscript>
+          <style>{`.aq-reveal { opacity: 1 !important; transform: none !important; }`}</style>
+        </noscript>
         {children}
         <Analytics />
       </body>

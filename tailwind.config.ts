@@ -11,10 +11,52 @@ const config: Config = {
   theme: {
   	extend: {
   		fontFamily: {
-  			sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-  			display: ['var(--font-syne)', 'system-ui', 'sans-serif'],
+  			sans: ['var(--font-instrument-sans)', 'system-ui', 'sans-serif'],
+  			display: ['var(--font-space-grotesk)', 'system-ui', 'sans-serif'],
+  			mono: ['var(--font-space-mono)', 'ui-monospace', 'SF Mono', 'monospace'],
   		},
   		colors: {
+  			/* AQ Studios palette — cool ink ramp + electric aqua signature */
+  			ink: {
+  				'50': '#EEF2F5',
+  				'100': '#DDE4E9',
+  				'200': '#B7C2CC',
+  				'300': '#8493A1',
+  				'400': '#566575',
+  				'500': '#33414F',
+  				'600': '#212B36',
+  				'700': '#171E27',
+  				'800': '#10151C',
+  				'900': '#0A0E13',
+  				'950': '#06090D'
+  			},
+  			paper: '#F5F8F9',
+  			aqua: {
+  				'100': '#D6FBF5',
+  				'300': '#8CF4E7',
+  				'400': '#48ECD8',
+  				'500': '#00E0C6',
+  				'600': '#00B39D',
+  				'700': '#008A7A'
+  			},
+  			indigo: {
+  				'100': '#E1E7FF',
+  				'500': '#6E8BFF',
+  				'600': '#4E6BEB'
+  			},
+  			coral: {
+  				'100': '#FFE3DA',
+  				'500': '#FF7A59',
+  				'600': '#ED5C39'
+  			},
+  			violet: {
+  				'100': '#EDE4FF',
+  				'500': '#A87BFF',
+  				'600': '#8A5CF0'
+  			},
+  			sun: '#FFC24B',
+
+  			/* shadcn/ui bridge */
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -37,8 +79,10 @@ const config: Config = {
   				DEFAULT: 'hsl(var(--muted))',
   				foreground: 'hsl(var(--muted-foreground))'
   			},
+  			/* `--accent` is the design system's aqua hex, so the shadcn accent
+  			   surface reads from `--accent-bg` to avoid the name collision. */
   			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
+  				DEFAULT: 'hsl(var(--accent-bg))',
   				foreground: 'hsl(var(--accent-foreground))'
   			},
   			destructive: {
@@ -67,9 +111,23 @@ const config: Config = {
   			}
   		},
   		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+  			/* Design system radii: medium-generous */
+  			xs: 'var(--radius-xs)',
+  			sm: 'var(--radius-sm)',
+  			md: 'var(--radius-md)',
+  			lg: 'var(--radius-lg)',
+  			xl: 'var(--radius-xl)',
+  			'2xl': 'var(--radius-2xl)',
+  			pill: 'var(--radius-pill)'
+  		},
+  		transitionTimingFunction: {
+  			out: 'var(--ease-out)',
+  			'in-out': 'var(--ease-in-out)',
+  			spring: 'var(--ease-spring)'
+  		},
+  		boxShadow: {
+  			glow: 'var(--glow-aqua)',
+  			'glow-soft': 'var(--glow-aqua-soft)'
   		},
   		keyframes: {
   			'accordion-down': {
@@ -79,42 +137,11 @@ const config: Config = {
   			'accordion-up': {
   				from: { height: 'var(--radix-accordion-content-height)' },
   				to: { height: '0' }
-  			},
-  			'float': {
-  				'0%, 100%': { transform: 'translateY(0px)' },
-  				'50%': { transform: 'translateY(-10px)' },
-  			},
-  			'shimmer': {
-  				'0%': { backgroundPosition: '-200% 0' },
-  				'100%': { backgroundPosition: '200% 0' },
-  			},
-  			'gradient-shift': {
-  				'0%': { backgroundPosition: '0% 50%' },
-  				'50%': { backgroundPosition: '100% 50%' },
-  				'100%': { backgroundPosition: '0% 50%' },
-  			},
-  			'marquee': {
-  				'0%': { transform: 'translateX(0)' },
-  				'100%': { transform: 'translateX(-50%)' },
-  			},
-  			'marquee-reverse': {
-  				'0%': { transform: 'translateX(-50%)' },
-  				'100%': { transform: 'translateX(0)' },
-  			},
-  			'pulse-glow': {
-  				'0%, 100%': { opacity: '0.4' },
-  				'50%': { opacity: '0.8' },
-  			},
+  			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out',
-  			'float': 'float 6s ease-in-out infinite',
-  			'shimmer': 'shimmer 3s ease-in-out infinite',
-  			'gradient-shift': 'gradient-shift 4s ease infinite',
-  			'marquee': 'marquee var(--marquee-duration, 30s) linear infinite',
-  			'marquee-reverse': 'marquee-reverse var(--marquee-duration, 30s) linear infinite',
-  			'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
   		}
   	}
   },

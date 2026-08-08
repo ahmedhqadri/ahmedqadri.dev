@@ -1,61 +1,193 @@
 "use client"
 
-import { motion } from 'framer-motion'
+import { scrollToSection } from './ds/motion'
+import { SOCIAL_LINKS } from './social-links'
 
-const footerLinks = [
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/ahmedhqadri/' },
-  { label: 'GitHub', href: 'https://github.com/ahmedhqadri' },
-  { label: 'Photography', href: 'https://vsco.co/aqlens' },
+const SECTIONS: [label: string, id: string][] = [
+  ['Projects', 'projects'],
+  ['Skills', 'skills'],
 ]
 
 export default function Footer() {
   return (
-    <footer className="relative z-10 py-10 px-4 md:px-6 lg:px-8">
-      {/* Animated gradient divider */}
-      <div className="max-w-7xl mx-auto mb-8">
+    <footer
+      style={{
+        background: 'var(--ink-950)',
+        borderTop: '1px solid var(--border-subtle)',
+        padding: 'var(--space-11) var(--gutter) var(--space-7)',
+      }}
+    >
+      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto' }}>
         <div
-          className="h-px w-full animate-gradient-shift"
-          style={{
-            background: 'linear-gradient(90deg, transparent, rgba(99, 152, 255, 0.3), rgba(155, 93, 229, 0.3), rgba(99, 152, 255, 0.3), transparent)',
-            backgroundSize: '200% 100%',
-          }}
-        />
-      </div>
-
-      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-xs text-white/30 tracking-wide"
+          className="grid grid-cols-1 sm:grid-cols-[1.6fr_1fr_1fr]"
+          style={{ gap: 'var(--space-8)' }}
         >
-          © {new Date().getFullYear()} Ahmed Qadri
-        </motion.p>
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1, duration: 0.6 }}
-          className="flex items-center gap-6"
-        >
-          {footerLinks.map((link, i) => (
-            <motion.a
-              key={link.label}
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.15 + i * 0.08, duration: 0.5 }}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-magnetic
-              className="text-xs text-white/30 hover:text-white/70 transition-colors duration-300"
+          <div>
+            <a
+              href="#top"
+              onClick={(e) => {
+                e.preventDefault()
+                scrollToSection('top')
+              }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 11, textDecoration: 'none' }}
             >
-              {link.label}
-            </motion.a>
-          ))}
-        </motion.div>
+              <span
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: 5,
+                  background: 'var(--aqua-500)',
+                  boxShadow: 'var(--glow-aqua-soft)',
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 600,
+                  fontSize: 19,
+                  letterSpacing: '-0.03em',
+                  color: 'var(--text-strong)',
+                }}
+              >
+                Ahmed<span style={{ color: 'var(--aqua-500)' }}>·</span>Qadri
+              </span>
+            </a>
+
+            <p
+              style={{
+                margin: '18px 0 0',
+                maxWidth: '32ch',
+                fontFamily: 'var(--font-sans)',
+                fontSize: 'var(--text-base)',
+                lineHeight: 1.55,
+                color: 'var(--text-muted)',
+                textWrap: 'pretty',
+              }}
+            >
+              Full-stack developer building scalable, user-focused applications.
+            </p>
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 22 }}>
+              {SOCIAL_LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={link.label}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--border-subtle)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--text-muted)',
+                    transition:
+                      'color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--text-strong)'
+                    e.currentTarget.style.borderColor = 'var(--border-strong)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--text-muted)'
+                    e.currentTarget.style.borderColor = 'var(--border-subtle)'
+                  }}
+                >
+                  {link.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 11,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: 'var(--text-faint)',
+                marginBottom: 16,
+              }}
+            >
+              Sections
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'flex-start' }}>
+              {SECTIONS.map(([label, id]) => (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    scrollToSection(id)
+                  }}
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 'var(--text-base)',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 11,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: 'var(--text-faint)',
+                marginBottom: 16,
+              }}
+            >
+              Elsewhere
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'flex-start' }}>
+              {SOCIAL_LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 'var(--text-base)',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 12,
+            marginTop: 'var(--space-9)',
+            paddingTop: 'var(--space-5)',
+            borderTop: '1px solid var(--border-subtle)',
+          }}
+        >
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-faint)' }}>
+            © {new Date().getFullYear()} Ahmed Qadri
+          </span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-faint)' }}>
+            All Rights Reserved.
+          </span>
+        </div>
       </div>
     </footer>
   )
