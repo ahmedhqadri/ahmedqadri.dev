@@ -1,11 +1,18 @@
 "use client"
 
+import Link from 'next/link'
 import { scrollToSection } from './ds/motion'
 import { SOCIAL_LINKS } from './social-links'
 
 const SECTIONS: [label: string, id: string][] = [
   ['Projects', 'projects'],
   ['Skills', 'skills'],
+]
+
+/** Linked from the app store listings, so these must stay reachable. */
+const APP_PAGES: [label: string, href: string][] = [
+  ['Support', '/support'],
+  ['Privacy Policy', '/privacy'],
 ]
 
 export default function Footer() {
@@ -19,7 +26,7 @@ export default function Footer() {
     >
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto' }}>
         <div
-          className="grid grid-cols-1 sm:grid-cols-[1.6fr_1fr_1fr]"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]"
           style={{ gap: 'var(--space-8)' }}
         >
           <div>
@@ -164,6 +171,36 @@ export default function Footer() {
                 >
                   {link.label}
                 </a>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 11,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: 'var(--text-faint)',
+                marginBottom: 16,
+              }}
+            >
+              Apps
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'flex-start' }}>
+              {APP_PAGES.map(([label, href]) => (
+                <Link
+                  key={href}
+                  href={href}
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: 'var(--text-base)',
+                    color: 'var(--text-muted)',
+                  }}
+                >
+                  {label}
+                </Link>
               ))}
             </div>
           </div>

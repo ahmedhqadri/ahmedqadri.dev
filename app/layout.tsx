@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { Space_Grotesk, Instrument_Sans, Space_Mono } from 'next/font/google'
+import { SITE_URL } from '@/lib/site'
 import './globals.css'
 
 /* AQ Studios type system:
@@ -27,12 +28,14 @@ const spaceMono = Space_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'Ahmed Qadri — Developer',
   description: 'Full-stack developer building scalable, user-focused applications.',
   openGraph: {
     title: 'Ahmed Qadri — Developer',
     description: 'Full-stack developer building scalable, user-focused applications.',
     type: 'website',
+    siteName: 'Ahmed Qadri',
   },
   twitter: {
     card: 'summary_large_image',

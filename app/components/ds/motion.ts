@@ -75,17 +75,26 @@ export function useReveal() {
 /**
  * Smooth-scroll to a section id, offset for the fixed glass nav.
  * `scrollIntoView` is avoided deliberately.
+ *
+ * The header and footer are shared with sub-routes like /support, where the
+ * target section does not exist — those fall back to the home page anchor.
  */
 export function scrollToSection(id: string) {
   if (id === 'top') {
+    if (window.location.pathname !== '/') {
+      window.location.href = '/'
+      return
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' })
     return
   }
   const el = document.getElementById(id)
-  if (el) {
-    window.scrollTo({
-      top: el.getBoundingClientRect().top + window.scrollY - 60,
-      behavior: 'smooth',
-    })
+  if (!el) {
+    window.location.href = `/#${id}`
+    return
   }
+  window.scrollTo({
+    top: el.getBoundingClientRect().top + window.scrollY - 60,
+    behavior: 'smooth',
+  })
 }
