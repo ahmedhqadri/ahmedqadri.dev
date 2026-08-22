@@ -6,6 +6,7 @@ import { ArrowUpRight, CodeXml } from 'lucide-react'
 import { Badge } from './ds/badge'
 import { Eyebrow } from './ds/eyebrow'
 import type { Hue } from './ds/eyebrow'
+import { Reveal } from './ds/reveal'
 
 const projects = [
   {
@@ -57,12 +58,8 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
   const hex = HUE_HEX[hue]
 
   return (
-    <article
-      className="aq-reveal"
-      style={{ transitionDelay: `${index * 80}ms` }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
+    <Reveal delay={(index % 3) * 0.12} y={48} scale={0.92}>
+      <article onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       {/* Cover frame — zooms 1.06 on hover, glass arrow chip reveals. Its own
           hairline border defines the edge, so the clip boundary is never bare. */}
       <div
@@ -191,8 +188,9 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
             Source
           </a>
         </div>
-      </div>
-    </article>
+        </div>
+      </article>
+    </Reveal>
   )
 }
 
@@ -207,8 +205,7 @@ export default function Projects() {
       }}
     >
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto' }}>
-        <div
-          className="aq-reveal"
+        <Reveal
           style={{
             display: 'flex',
             alignItems: 'flex-end',
@@ -247,7 +244,7 @@ export default function Projects() {
           >
             A collection of projects I've worked on.
           </p>
-        </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[18px]">
           {projects.map((project, index) => (

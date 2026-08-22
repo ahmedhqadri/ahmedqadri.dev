@@ -1,14 +1,70 @@
 "use client"
 
+import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { Button } from './ds/button'
 import { Eyebrow } from './ds/eyebrow'
+import { EASE } from './ds/reveal'
 import { SOCIAL_LINKS } from './social-links'
 
 const TAGLINE = 'Full-stack developer building scalable, user-focused applications.'
 
+/* Staggered entrance for the intro column. */
+const introContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+}
+
+const introItem = {
+  hidden: { opacity: 0, y: 26 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
+}
+
+/**
+ * Glowing streaks that travel along the grid-floor lines — one horizontal,
+ * one vertical. They live inside the grid layer so they share its parallax
+ * transform and radial mask, and sit on 64px multiples to match the lines.
+ */
+function GridStreaks() {
+  return (
+    <>
+      <motion.span
+        style={{
+          position: 'absolute',
+          top: 255,
+          left: 0,
+          width: 220,
+          height: 2,
+          borderRadius: 2,
+          background: 'linear-gradient(90deg, transparent, var(--aqua-500), transparent)',
+          boxShadow: '0 0 14px rgba(0, 224, 198, 0.65)',
+        }}
+        initial={{ x: '-25vw' }}
+        animate={{ x: '105vw' }}
+        transition={{ duration: 9, ease: 'linear', repeat: Infinity, repeatDelay: 5, delay: 1 }}
+      />
+      <motion.span
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 319,
+          width: 2,
+          height: 220,
+          borderRadius: 2,
+          background: 'linear-gradient(180deg, transparent, var(--indigo-500), transparent)',
+          boxShadow: '0 0 14px rgba(110, 139, 255, 0.6)',
+        }}
+        initial={{ y: '-30vh' }}
+        animate={{ y: '105vh' }}
+        transition={{ duration: 11, ease: 'linear', repeat: Infinity, repeatDelay: 6, delay: 5 }}
+      />
+    </>
+  )
+}
+
 export default function Hero() {
   const [primary, ...secondary] = SOCIAL_LINKS
+  const reduceMotion = useReducedMotion()
 
   return (
     <section
@@ -23,8 +79,10 @@ export default function Hero() {
         background: 'radial-gradient(120% 90% at 70% 0%, #0d1720 0%, var(--ink-950) 60%)',
       }}
     >
-      {/* Grid floor */}
-      <div aria-hidden data-depth="0.05" className="aq-grid-floor" style={{ position: 'absolute', inset: 0 }} />
+      {/* Grid floor, with light streaks running along its lines */}
+      <div aria-hidden data-depth="0.05" className="aq-grid-floor" style={{ position: 'absolute', inset: 0 }}>
+        {!reduceMotion && <GridStreaks />}
+      </div>
 
       {/* Parallax glow orbs — aqua signature, indigo counterweight */}
       <div
@@ -66,10 +124,17 @@ export default function Hero() {
           gap: 'var(--space-9)',
         }}
       >
-        <div className="aq-reveal">
-          <Eyebrow hue="aqua">Hi, I&apos;m</Eyebrow>
+        <motion.div
+          variants={introContainer}
+          initial={reduceMotion ? false : 'hidden'}
+          animate="visible"
+        >
+          <motion.div variants={introItem}>
+            <Eyebrow hue="aqua">Hi, I&apos;m</Eyebrow>
+          </motion.div>
 
-          <h1
+          <motion.h1
+            variants={introItem}
             style={{
               margin: '20px 0 0',
               fontFamily: 'var(--font-display)',
@@ -83,9 +148,10 @@ export default function Hero() {
             Ahmed
             <br />
             Qadri<span style={{ color: 'var(--aqua-500)' }}>.</span>
-          </h1>
+          </motion.h1>
 
-          <p
+          <motion.p
+            variants={introItem}
             style={{
               margin: '26px 0 0',
               maxWidth: '46ch',
@@ -97,9 +163,12 @@ export default function Hero() {
             }}
           >
             {TAGLINE}
-          </p>
+          </motion.p>
 
-          <div style={{ display: 'flex', gap: 14, marginTop: 34, flexWrap: 'wrap' }}>
+          <motion.div
+            variants={introItem}
+            style={{ display: 'flex', gap: 14, marginTop: 34, flexWrap: 'wrap' }}
+          >
             <Button
               variant="primary"
               size="lg"
@@ -124,12 +193,17 @@ export default function Hero() {
                 {link.label}
               </Button>
             ))}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        {/* Floating code mock */}
-        <div data-depth="0.12" className="hidden lg:block aq-reveal" style={{ position: 'relative' }}>
-          <div
+        {/* Code mock — entrance fade, then an aqua/indigo light traces the
+            border, echoing the grid streaks. The beam layer is masked down to
+            the 1.5px border ring, and the conic gradient rotates beneath it. */}
+        <div data-depth="0.12" className="hidden lg:block" style={{ position: 'relative' }}>
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 36 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.35, ease: EASE }}
             style={{
               position: 'relative',
               background: 'var(--ink-800)',
@@ -139,51 +213,88 @@ export default function Hero() {
               boxShadow: 'var(--shadow-xl)',
             }}
           >
-            <div style={{ display: 'flex', gap: 7, marginBottom: 14 }}>
-              {['var(--coral-500)', 'var(--sun-500)', 'var(--aqua-500)'].map((c) => (
-                <span key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
-              ))}
+            {!reduceMotion && (
+              <div
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  inset: -1,
+                  borderRadius: 'var(--radius-xl)',
+                  padding: 1.5,
+                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                  WebkitMaskComposite: 'xor',
+                  mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                  maskComposite: 'exclude',
+                  overflow: 'hidden',
+                  pointerEvents: 'none',
+                }}
+              >
+                <motion.div
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    width: 700,
+                    height: 700,
+                    marginTop: -350,
+                    marginLeft: -350,
+                    background:
+                      'conic-gradient(from 0deg, transparent 0deg 55deg, var(--aqua-500) 90deg, transparent 125deg 235deg, var(--indigo-500) 270deg, transparent 305deg 360deg)',
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 9, ease: 'linear', repeat: Infinity }}
+                />
+              </div>
+            )}
+            <div>
+              <div style={{ display: 'flex', gap: 7, marginBottom: 14 }}>
+                {['var(--coral-500)', 'var(--sun-500)', 'var(--aqua-500)'].map((c) => (
+                  <span key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
+                ))}
+              </div>
+              <div
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 13,
+                  lineHeight: 1.8,
+                  color: 'var(--text-muted)',
+                }}
+              >
+                <div>
+                  <span style={{ color: 'var(--indigo-500)' }}>const</span>{' '}
+                  <span style={{ color: 'var(--text-strong)' }}>ahmed</span> ={' '}
+                  <span style={{ color: 'var(--aqua-300)' }}>developer</span>({'{'}
+                </div>
+                <div style={{ paddingLeft: 20 }}>
+                  stack: [<span style={{ color: 'var(--coral-500)' }}>&apos;TypeScript&apos;</span>,{' '}
+                  <span style={{ color: 'var(--coral-500)' }}>&apos;React&apos;</span>],
+                </div>
+                <div style={{ paddingLeft: 20 }}>
+                  also: [<span style={{ color: 'var(--coral-500)' }}>&apos;Node&apos;</span>,{' '}
+                  <span style={{ color: 'var(--coral-500)' }}>&apos;Python&apos;</span>,{' '}
+                  <span style={{ color: 'var(--coral-500)' }}>&apos;AWS&apos;</span>],
+                </div>
+                <div style={{ paddingLeft: 20 }}>
+                  builds: <span style={{ color: 'var(--coral-500)' }}>&apos;scalable, user-focused apps&apos;</span>,
+                </div>
+                <div>{'}'});</div>
+                <div style={{ marginTop: 10, color: 'var(--aqua-500)' }}>→ github.com/ahmedhqadri</div>
+              </div>
             </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 13,
-                lineHeight: 1.8,
-                color: 'var(--text-muted)',
-              }}
-            >
-              <div>
-                <span style={{ color: 'var(--indigo-500)' }}>const</span>{' '}
-                <span style={{ color: 'var(--text-strong)' }}>ahmed</span> ={' '}
-                <span style={{ color: 'var(--aqua-300)' }}>developer</span>({'{'}
-              </div>
-              <div style={{ paddingLeft: 20 }}>
-                stack: [<span style={{ color: 'var(--coral-500)' }}>&apos;TypeScript&apos;</span>,{' '}
-                <span style={{ color: 'var(--coral-500)' }}>&apos;React&apos;</span>],
-              </div>
-              <div style={{ paddingLeft: 20 }}>
-                also: [<span style={{ color: 'var(--coral-500)' }}>&apos;Node&apos;</span>,{' '}
-                <span style={{ color: 'var(--coral-500)' }}>&apos;Python&apos;</span>,{' '}
-                <span style={{ color: 'var(--coral-500)' }}>&apos;AWS&apos;</span>],
-              </div>
-              <div style={{ paddingLeft: 20 }}>
-                builds: <span style={{ color: 'var(--coral-500)' }}>&apos;scalable, user-focused apps&apos;</span>,
-              </div>
-              <div>{'}'});</div>
-              <div style={{ marginTop: 10, color: 'var(--aqua-500)' }}>→ github.com/ahmedhqadri</div>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
       {/* Scroll cue */}
-      <div
+      <motion.div
         aria-hidden
+        animate={reduceMotion ? undefined : { y: [0, 6, 0] }}
+        transition={{ duration: 2.4, ease: 'easeInOut', repeat: Infinity }}
         style={{
           position: 'absolute',
           bottom: 26,
           left: '50%',
-          transform: 'translateX(-50%)',
+          x: '-50%',
           fontFamily: 'var(--font-mono)',
           fontSize: 10,
           letterSpacing: '0.2em',
@@ -199,7 +310,7 @@ export default function Hero() {
         <span
           style={{ width: 1, height: 30, background: 'linear-gradient(var(--aqua-500), transparent)' }}
         />
-      </div>
+      </motion.div>
     </section>
   )
 }

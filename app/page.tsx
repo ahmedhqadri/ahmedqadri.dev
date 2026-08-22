@@ -7,15 +7,15 @@ import Hero from './components/hero'
 import Projects from './components/projects'
 import Skills from './components/skills'
 import Footer from './components/footer'
-import { useParallax, useReveal } from './components/ds/motion'
+import { useParallax } from './components/ds/motion'
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState('top')
 
-  // Parallax is the signature: [data-depth] layers translate on scroll,
-  // and sections fade up 24px as they enter view.
+  // Parallax is the signature: [data-depth] layers translate on scroll.
+  // Section reveals are Framer Motion (`Reveal` in ds/reveal) on this page;
+  // the CSS `.aq-reveal` pattern remains for the doc pages.
   useParallax()
-  useReveal()
 
   // Scroll progress for the top indicator
   const { scrollYProgress } = useScroll()
