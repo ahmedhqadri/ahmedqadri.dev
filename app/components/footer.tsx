@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { scrollToSection } from './ds/motion'
+import { Reveal } from './ds/reveal'
 import { SOCIAL_LINKS } from './social-links'
 
 const SECTIONS: [label: string, id: string][] = [
@@ -24,7 +25,7 @@ export default function Footer() {
         padding: 'var(--space-11) var(--gutter) var(--space-7)',
       }}
     >
-      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto' }}>
+      <Reveal y={20} style={{ maxWidth: 'var(--container-max)', margin: '0 auto' }}>
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]"
           style={{ gap: 'var(--space-8)' }}
@@ -225,7 +226,7 @@ export default function Footer() {
             All Rights Reserved.
           </span>
         </div>
-      </div>
+      </Reveal>
     </footer>
   )
 }

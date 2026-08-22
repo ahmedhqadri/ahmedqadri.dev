@@ -1,6 +1,8 @@
 "use client"
 
+import { motion, useReducedMotion } from 'framer-motion'
 import { Eyebrow } from './ds/eyebrow'
+import { EASE, Reveal } from './ds/reveal'
 
 const skills = [
   "JavaScript", "TypeScript", "React", "Next.js", "Node.js",
@@ -9,9 +11,22 @@ const skills = [
   "Microservices", "CI/CD", "Docker", "Kubernetes", "Testing", "Agile",
 ]
 
+/* Chips cascade in a quick wave once the wall scrolls into view. */
+const chipWall = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.03 } },
+}
+
+const chip = {
+  hidden: { opacity: 0, y: 14, scale: 0.94 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: EASE } },
+}
+
 function SkillChip({ name }: { name: string }) {
   return (
-    <span
+    <motion.span
+      variants={chip}
+      whileHover={{ y: -2 }}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -26,21 +41,19 @@ function SkillChip({ name }: { name: string }) {
         color: 'var(--text-muted)',
         whiteSpace: 'nowrap',
         transition:
-          'color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out)',
+          'color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out)',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.color = 'var(--text-strong)'
         e.currentTarget.style.borderColor = 'var(--aqua-600)'
-        e.currentTarget.style.transform = 'translateY(-1px)'
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.color = 'var(--text-muted)'
         e.currentTarget.style.borderColor = 'var(--border-subtle)'
-        e.currentTarget.style.transform = 'none'
       }}
     >
       {name}
-    </span>
+    </motion.span>
   )
 }
 
@@ -49,6 +62,8 @@ function SkillChip({ name }: { name: string }) {
  * dark-forward page its contrast beat.
  */
 export default function Skills() {
+  const reduceMotion = useReducedMotion()
+
   return (
     <section
       id="skills"
@@ -79,10 +94,7 @@ export default function Skills() {
       />
 
       <div style={{ position: 'relative', maxWidth: 'var(--container-max)', margin: '0 auto' }}>
-        <div
-          className="aq-reveal"
-          style={{ textAlign: 'center', maxWidth: '40ch', margin: '0 auto var(--space-8)' }}
-        >
+        <Reveal style={{ textAlign: 'center', maxWidth: '40ch', margin: '0 auto var(--space-8)' }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <Eyebrow hue="indigo">What I work with</Eyebrow>
           </div>
@@ -99,10 +111,13 @@ export default function Skills() {
           >
             Skills &amp; Tools
           </h2>
-        </div>
+        </Reveal>
 
-        <div
-          className="aq-reveal"
+        <motion.div
+          variants={chipWall}
+          initial={reduceMotion ? false : 'hidden'}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
           style={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -115,7 +130,7 @@ export default function Skills() {
           {skills.map((skill) => (
             <SkillChip key={skill} name={skill} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )
