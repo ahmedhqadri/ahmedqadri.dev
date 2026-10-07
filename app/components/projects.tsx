@@ -620,19 +620,6 @@ export default function Projects() {
                   </button>
                 )
               })}
-              <span
-                className="hidden sm:inline"
-                style={{
-                  marginLeft: 12,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 'var(--text-2xs)',
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  color: 'var(--text-faint)',
-                }}
-              >
-                Hover an arrow to auto-advance
-              </span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
