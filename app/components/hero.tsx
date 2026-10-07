@@ -1,10 +1,12 @@
 "use client"
 
+import { useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { Button } from './ds/button'
 import { Eyebrow } from './ds/eyebrow'
 import { EASE } from './ds/reveal'
+import { Align, AlignGroup, useAlignProgress } from './ds/scroll-align'
 import { SOCIAL_LINKS } from './social-links'
 
 const TAGLINE = 'Full-stack developer building scalable, user-focused applications.'
@@ -65,6 +67,8 @@ function GridStreaks() {
 export default function Hero() {
   const [primary, ...secondary] = SOCIAL_LINKS
   const reduceMotion = useReducedMotion()
+  const gridRef = useRef<HTMLDivElement>(null)
+  const align = useAlignProgress(gridRef)
 
   return (
     <section
@@ -114,176 +118,189 @@ export default function Hero() {
         }}
       />
 
-      <div
-        className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center"
-        style={{
-          position: 'relative',
-          width: '100%',
-          maxWidth: 'var(--container-wide)',
-          margin: '0 auto',
-          gap: 'var(--space-9)',
-        }}
-      >
-        <motion.div
-          variants={introContainer}
-          initial={reduceMotion ? false : 'hidden'}
-          animate="visible"
+      <AlignGroup progress={align}>
+        <div
+          ref={gridRef}
+          className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center"
+          style={{
+            position: 'relative',
+            width: '100%',
+            maxWidth: 'var(--container-wide)',
+            margin: '0 auto',
+            gap: 'var(--space-9)',
+          }}
         >
-          <motion.div variants={introItem}>
-            <Eyebrow hue="aqua">Hi, I&apos;m</Eyebrow>
-          </motion.div>
-
-          <motion.h1
-            variants={introItem}
-            style={{
-              margin: '20px 0 0',
-              fontFamily: 'var(--font-display)',
-              fontWeight: 500,
-              fontSize: 'var(--display-hero)',
-              lineHeight: 0.98,
-              letterSpacing: '-0.035em',
-              color: 'var(--text-strong)',
-            }}
-          >
-            Ahmed
-            <br />
-            Qadri<span style={{ color: 'var(--aqua-500)' }}>.</span>
-          </motion.h1>
-
-          <motion.p
-            variants={introItem}
-            style={{
-              margin: '26px 0 0',
-              maxWidth: '46ch',
-              fontFamily: 'var(--font-sans)',
-              fontSize: 'var(--text-xl)',
-              lineHeight: 1.5,
-              color: 'var(--text-body)',
-              textWrap: 'pretty',
-            }}
-          >
-            {TAGLINE}
-          </motion.p>
-
           <motion.div
-            variants={introItem}
-            style={{ display: 'flex', gap: 14, marginTop: 34, flexWrap: 'wrap' }}
+            variants={introContainer}
+            initial={reduceMotion ? false : 'hidden'}
+            animate="visible"
           >
-            <Button
-              variant="primary"
-              size="lg"
-              href={primary.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              iconLeft={primary.icon}
-              iconRight={<ArrowUpRight size={20} strokeWidth={2} />}
-            >
-              {primary.label}
-            </Button>
-            {secondary.map((link) => (
-              <Button
-                key={link.label}
-                variant="secondary"
-                size="lg"
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                iconLeft={link.icon}
-              >
-                {link.label}
-              </Button>
-            ))}
-          </motion.div>
-        </motion.div>
+            <Align x={-140} lag={0.3}>
+              <motion.div variants={introItem}>
+                <Eyebrow hue="aqua">Hi, I&apos;m</Eyebrow>
+              </motion.div>
+            </Align>
 
-        {/* Code mock — entrance fade, then an aqua/indigo light traces the
-            border, echoing the grid streaks. The beam layer is masked down to
-            the 1.5px border ring, and the conic gradient rotates beneath it. */}
-        <div data-depth="0.12" className="hidden lg:block" style={{ position: 'relative' }}>
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: 36 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.35, ease: EASE }}
-            style={{
-              position: 'relative',
-              background: 'var(--ink-800)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: 'var(--radius-xl)',
-              padding: 18,
-              boxShadow: 'var(--shadow-xl)',
-            }}
-          >
-            {!reduceMotion && (
-              <div
-                aria-hidden
+            <Align x={-240} rotate={-4}>
+              <motion.h1
+                variants={introItem}
                 style={{
-                  position: 'absolute',
-                  inset: -1,
-                  borderRadius: 'var(--radius-xl)',
-                  padding: 1.5,
-                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                  WebkitMaskComposite: 'xor',
-                  mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                  maskComposite: 'exclude',
-                  overflow: 'hidden',
-                  pointerEvents: 'none',
+                  margin: '20px 0 0',
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 500,
+                  fontSize: 'var(--display-hero)',
+                  lineHeight: 0.98,
+                  letterSpacing: '-0.035em',
+                  color: 'var(--text-strong)',
                 }}
               >
-                <motion.div
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: 700,
-                    height: 700,
-                    marginTop: -350,
-                    marginLeft: -350,
-                    background:
-                      'conic-gradient(from 0deg, transparent 0deg 55deg, var(--aqua-500) 90deg, transparent 125deg 235deg, var(--indigo-500) 270deg, transparent 305deg 360deg)',
-                  }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 9, ease: 'linear', repeat: Infinity }}
-                />
-              </div>
-            )}
-            <div>
-              <div style={{ display: 'flex', gap: 7, marginBottom: 14 }}>
-                {['var(--coral-500)', 'var(--sun-500)', 'var(--aqua-500)'].map((c) => (
-                  <span key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
+                Ahmed
+                <br />
+                Qadri<span style={{ color: 'var(--aqua-500)' }}>.</span>
+              </motion.h1>
+            </Align>
+
+            <Align x={-180} lag={0.15}>
+              <motion.p
+                variants={introItem}
+                style={{
+                  margin: '26px 0 0',
+                  maxWidth: '46ch',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: 'var(--text-xl)',
+                  lineHeight: 1.5,
+                  color: 'var(--text-body)',
+                  textWrap: 'pretty',
+                }}
+              >
+                {TAGLINE}
+              </motion.p>
+            </Align>
+
+            <Align y={90} x={-60} lag={0.35}>
+              <motion.div
+                variants={introItem}
+                style={{ display: 'flex', gap: 14, marginTop: 34, flexWrap: 'wrap' }}
+              >
+                <Button
+                  variant="primary"
+                  size="lg"
+                  href={primary.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  iconLeft={primary.icon}
+                  iconRight={<ArrowUpRight size={20} strokeWidth={2} />}
+                >
+                  {primary.label}
+                </Button>
+                {secondary.map((link) => (
+                  <Button
+                    key={link.label}
+                    variant="secondary"
+                    size="lg"
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    iconLeft={link.icon}
+                  >
+                    {link.label}
+                  </Button>
                 ))}
-              </div>
-              <div
+              </motion.div>
+            </Align>
+          </motion.div>
+
+          {/* Code mock — entrance fade, then an aqua/indigo light traces the
+              border, echoing the grid streaks. The beam layer is masked down to
+              the 1.5px border ring, and the conic gradient rotates beneath it. */}
+          <div data-depth="0.12" className="hidden lg:block" style={{ position: 'relative' }}>
+            <Align x={280} rotate={7} scale={0.9} lag={0.1}>
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: 36 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.35, ease: EASE }}
                 style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 13,
-                  lineHeight: 1.8,
-                  color: 'var(--text-muted)',
+                  position: 'relative',
+                  background: 'var(--ink-800)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-xl)',
+                  padding: 18,
+                  boxShadow: 'var(--shadow-xl)',
                 }}
               >
+                {!reduceMotion && (
+                  <div
+                    aria-hidden
+                    style={{
+                      position: 'absolute',
+                      inset: -1,
+                      borderRadius: 'var(--radius-xl)',
+                      padding: 1.5,
+                      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                      WebkitMaskComposite: 'xor',
+                      mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                      maskComposite: 'exclude',
+                      overflow: 'hidden',
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <motion.div
+                      style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        width: 700,
+                        height: 700,
+                        marginTop: -350,
+                        marginLeft: -350,
+                        background:
+                          'conic-gradient(from 0deg, transparent 0deg 55deg, var(--aqua-500) 90deg, transparent 125deg 235deg, var(--indigo-500) 270deg, transparent 305deg 360deg)',
+                      }}
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 9, ease: 'linear', repeat: Infinity }}
+                    />
+                  </div>
+                )}
                 <div>
-                  <span style={{ color: 'var(--indigo-500)' }}>const</span>{' '}
-                  <span style={{ color: 'var(--text-strong)' }}>ahmed</span> ={' '}
-                  <span style={{ color: 'var(--aqua-300)' }}>developer</span>({'{'}
+                  <div style={{ display: 'flex', gap: 7, marginBottom: 14 }}>
+                    {['var(--coral-500)', 'var(--sun-500)', 'var(--aqua-500)'].map((c) => (
+                      <span key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c }} />
+                    ))}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 13,
+                      lineHeight: 1.8,
+                      color: 'var(--text-muted)',
+                    }}
+                  >
+                    <div>
+                      <span style={{ color: 'var(--indigo-500)' }}>const</span>{' '}
+                      <span style={{ color: 'var(--text-strong)' }}>ahmed</span> ={' '}
+                      <span style={{ color: 'var(--aqua-300)' }}>developer</span>({'{'}
+                    </div>
+                    <div style={{ paddingLeft: 20 }}>
+                      stack: [<span style={{ color: 'var(--coral-500)' }}>&apos;TypeScript&apos;</span>,{' '}
+                      <span style={{ color: 'var(--coral-500)' }}>&apos;React&apos;</span>],
+                    </div>
+                    <div style={{ paddingLeft: 20 }}>
+                      also: [<span style={{ color: 'var(--coral-500)' }}>&apos;Node&apos;</span>,{' '}
+                      <span style={{ color: 'var(--coral-500)' }}>&apos;Python&apos;</span>,{' '}
+                      <span style={{ color: 'var(--coral-500)' }}>&apos;AWS&apos;</span>],
+                    </div>
+                    <div style={{ paddingLeft: 20 }}>
+                      builds: <span style={{ color: 'var(--coral-500)' }}>&apos;scalable, user-focused apps&apos;</span>,
+                    </div>
+                    <div>{'}'});</div>
+                    <div style={{ marginTop: 10, color: 'var(--aqua-500)' }}>→ github.com/ahmedhqadri</div>
+                  </div>
                 </div>
-                <div style={{ paddingLeft: 20 }}>
-                  stack: [<span style={{ color: 'var(--coral-500)' }}>&apos;TypeScript&apos;</span>,{' '}
-                  <span style={{ color: 'var(--coral-500)' }}>&apos;React&apos;</span>],
-                </div>
-                <div style={{ paddingLeft: 20 }}>
-                  also: [<span style={{ color: 'var(--coral-500)' }}>&apos;Node&apos;</span>,{' '}
-                  <span style={{ color: 'var(--coral-500)' }}>&apos;Python&apos;</span>,{' '}
-                  <span style={{ color: 'var(--coral-500)' }}>&apos;AWS&apos;</span>],
-                </div>
-                <div style={{ paddingLeft: 20 }}>
-                  builds: <span style={{ color: 'var(--coral-500)' }}>&apos;scalable, user-focused apps&apos;</span>,
-                </div>
-                <div>{'}'});</div>
-                <div style={{ marginTop: 10, color: 'var(--aqua-500)' }}>→ github.com/ahmedhqadri</div>
-              </div>
-            </div>
-          </motion.div>
+              </motion.div>
+            </Align>
+          </div>
         </div>
-      </div>
+      </AlignGroup>
 
       {/* Scroll cue */}
       <motion.div

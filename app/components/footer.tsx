@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { scrollToSection } from './ds/motion'
-import { Reveal } from './ds/reveal'
+import { useRef } from 'react'
+import { Align, AlignGroup, useAlignProgress } from './ds/scroll-align'
 import { SOCIAL_LINKS } from './social-links'
 
 const SECTIONS: [label: string, id: string][] = [
@@ -17,6 +18,11 @@ const APP_PAGES: [label: string, href: string][] = [
 ]
 
 export default function Footer() {
+  // Last block on the page: it finishes assembling by the time the page
+  // bottoms out, and only scatters again on the way back up.
+  const ref = useRef<HTMLDivElement>(null)
+  const align = useAlignProgress(ref)
+
   return (
     <footer
       style={{
@@ -25,208 +31,212 @@ export default function Footer() {
         padding: 'var(--space-11) var(--gutter) var(--space-7)',
       }}
     >
-      <Reveal y={20} style={{ maxWidth: 'var(--container-max)', margin: '0 auto' }}>
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]"
-          style={{ gap: 'var(--space-8)' }}
-        >
-          <div>
-            <a
-              href="#top"
-              onClick={(e) => {
-                e.preventDefault()
-                scrollToSection('top')
-              }}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 11, textDecoration: 'none' }}
-            >
-              <span
-                style={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: 5,
-                  background: 'var(--aqua-500)',
-                  boxShadow: 'var(--glow-aqua-soft)',
+      <AlignGroup progress={align}>
+        <div ref={ref} style={{ maxWidth: 'var(--container-max)', margin: '0 auto' }}>
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]"
+            style={{ gap: 'var(--space-8)' }}
+          >
+            <Align x={-200}>
+              <a
+                href="#top"
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToSection('top')
                 }}
-              />
-              <span
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 11, textDecoration: 'none' }}
+              >
+                <span
+                  style={{
+                    width: 16,
+                    height: 16,
+                    borderRadius: 5,
+                    background: 'var(--aqua-500)',
+                    boxShadow: 'var(--glow-aqua-soft)',
+                  }}
+                />
+                <span
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 600,
+                    fontSize: 19,
+                    letterSpacing: '-0.03em',
+                    color: 'var(--text-strong)',
+                  }}
+                >
+                  Ahmed<span style={{ color: 'var(--aqua-500)' }}>·</span>Qadri
+                </span>
+              </a>
+
+              <p
                 style={{
-                  fontFamily: 'var(--font-display)',
-                  fontWeight: 600,
-                  fontSize: 19,
-                  letterSpacing: '-0.03em',
-                  color: 'var(--text-strong)',
+                  margin: '18px 0 0',
+                  maxWidth: '32ch',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: 'var(--text-base)',
+                  lineHeight: 1.55,
+                  color: 'var(--text-muted)',
+                  textWrap: 'pretty',
                 }}
               >
-                Ahmed<span style={{ color: 'var(--aqua-500)' }}>·</span>Qadri
-              </span>
-            </a>
+                Full-stack developer building scalable, user-focused applications.
+              </p>
 
-            <p
-              style={{
-                margin: '18px 0 0',
-                maxWidth: '32ch',
-                fontFamily: 'var(--font-sans)',
-                fontSize: 'var(--text-base)',
-                lineHeight: 1.55,
-                color: 'var(--text-muted)',
-                textWrap: 'pretty',
-              }}
-            >
-              Full-stack developer building scalable, user-focused applications.
-            </p>
+              <div style={{ display: 'flex', gap: 12, marginTop: 22 }}>
+                {SOCIAL_LINKS.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={link.label}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 'var(--radius-md)',
+                      border: '1px solid var(--border-subtle)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'var(--text-muted)',
+                      transition:
+                        'color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = 'var(--text-strong)'
+                      e.currentTarget.style.borderColor = 'var(--border-strong)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'var(--text-muted)'
+                      e.currentTarget.style.borderColor = 'var(--border-subtle)'
+                    }}
+                  >
+                    {link.icon}
+                  </a>
+                ))}
+              </div>
+            </Align>
 
-            <div style={{ display: 'flex', gap: 12, marginTop: 22 }}>
-              {SOCIAL_LINKS.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={link.label}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--border-subtle)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'var(--text-muted)',
-                    transition:
-                      'color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = 'var(--text-strong)'
-                    e.currentTarget.style.borderColor = 'var(--border-strong)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = 'var(--text-muted)'
-                    e.currentTarget.style.borderColor = 'var(--border-subtle)'
-                  }}
-                >
-                  {link.icon}
-                </a>
-              ))}
-            </div>
+            <Align y={110} lag={0.1}>
+              <div
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 11,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-faint)',
+                  marginBottom: 16,
+                }}
+              >
+                Sections
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'flex-start' }}>
+                {SECTIONS.map(([label, id]) => (
+                  <a
+                    key={id}
+                    href={`#${id}`}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      scrollToSection(id)
+                    }}
+                    style={{
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: 'var(--text-base)',
+                      color: 'var(--text-muted)',
+                    }}
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </Align>
+
+            <Align y={110} lag={0.25}>
+              <div
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 11,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-faint)',
+                  marginBottom: 16,
+                }}
+              >
+                Elsewhere
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'flex-start' }}>
+                {SOCIAL_LINKS.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: 'var(--text-base)',
+                      color: 'var(--text-muted)',
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </Align>
+
+            <Align x={200} lag={0.4}>
+              <div
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 11,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-faint)',
+                  marginBottom: 16,
+                }}
+              >
+                Apps
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'flex-start' }}>
+                {APP_PAGES.map(([label, href]) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    style={{
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: 'var(--text-base)',
+                      color: 'var(--text-muted)',
+                    }}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </Align>
           </div>
 
-          <div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: 'var(--text-faint)',
-                marginBottom: 16,
-              }}
-            >
-              Sections
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'flex-start' }}>
-              {SECTIONS.map(([label, id]) => (
-                <a
-                  key={id}
-                  href={`#${id}`}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    scrollToSection(id)
-                  }}
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: 'var(--text-base)',
-                    color: 'var(--text-muted)',
-                  }}
-                >
-                  {label}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: 'var(--text-faint)',
-                marginBottom: 16,
-              }}
-            >
-              Elsewhere
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'flex-start' }}>
-              {SOCIAL_LINKS.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: 'var(--text-base)',
-                    color: 'var(--text-muted)',
-                  }}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: 'var(--text-faint)',
-                marginBottom: 16,
-              }}
-            >
-              Apps
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 11, alignItems: 'flex-start' }}>
-              {APP_PAGES.map(([label, href]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: 'var(--text-base)',
-                    color: 'var(--text-muted)',
-                  }}
-                >
-                  {label}
-                </Link>
-              ))}
-            </div>
-          </div>
+          <Align
+            y={50}
+            lag={0.5}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 12,
+              marginTop: 'var(--space-9)',
+              paddingTop: 'var(--space-5)',
+              borderTop: '1px solid var(--border-subtle)',
+            }}
+          >
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-faint)' }}>
+              © {new Date().getFullYear()} Ahmed Qadri
+            </span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-faint)' }}>
+              All Rights Reserved.
+            </span>
+          </Align>
         </div>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: 12,
-            marginTop: 'var(--space-9)',
-            paddingTop: 'var(--space-5)',
-            borderTop: '1px solid var(--border-subtle)',
-          }}
-        >
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-faint)' }}>
-            © {new Date().getFullYear()} Ahmed Qadri
-          </span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-faint)' }}>
-            All Rights Reserved.
-          </span>
-        </div>
-      </Reveal>
+      </AlignGroup>
     </footer>
   )
 }
