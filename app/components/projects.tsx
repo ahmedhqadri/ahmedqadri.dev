@@ -1,18 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { MutableRefObject, RefObject } from 'react'
 import Image from 'next/image'
-import {
-  AnimatePresence,
-  animate,
-  motion,
-  useAnimationFrame,
-  useMotionTemplate,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-} from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import type { PanInfo } from 'framer-motion'
 import { ArrowLeft, ArrowRight, ArrowUpRight, CodeXml } from 'lucide-react'
 import { Badge } from './ds/badge'
@@ -170,180 +160,6 @@ function NavButton({
 }
 
 /* ------------------------------------------------------------------ */
-/* Aura: a two-tone conic gradient that circles the cover slowly, as a */
-/* hairline ring plus a blurred halo. When the pointer comes near, the */
-/* bright arc swings to the far side and the halo drifts away from it. */
-/* ------------------------------------------------------------------ */
-
-/** Degrees per second for the idle orbit (one lap is about 24s). */
-const ORBIT_SPEED = 15
-/** The bright arc is centred this many degrees past the gradient's start. */
-const HOT_OFFSET = 55
-/** How far the halo is pushed away from the pointer, in px. */
-const HALO_PUSH = 28
-
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
-const smooth = (v: number) => v * v * (3 - 2 * v)
-const angleDiff = (to: number, from: number) => ((((to - from) % 360) + 540) % 360) - 180
-
-function CoverAura({
-  frameRef,
-  pointerRef,
-  primary,
-  secondary,
-  paused,
-}: {
-  frameRef: RefObject<HTMLDivElement | null>
-  pointerRef: MutableRefObject<{ x: number; y: number; active: boolean }>
-  primary: string
-  secondary: string
-  paused: boolean
-}) {
-  const angle = useMotionValue(0)
-  const c1 = useMotionValue(primary)
-  const c2 = useMotionValue(secondary)
-  const pushX = useSpring(0, { stiffness: 90, damping: 18, mass: 0.6 })
-  const pushY = useSpring(0, { stiffness: 90, damping: 18, mass: 0.6 })
-  const base = useRef(0)
-  const current = useRef(0)
-
-  // Colours glide to the next project's hue instead of snapping.
-  useEffect(() => {
-    const a = animate(c1, primary, { duration: 1.2, ease: EASE })
-    const b = animate(c2, secondary, { duration: 1.2, ease: EASE })
-    return () => {
-      a.stop()
-      b.stop()
-    }
-  }, [primary, secondary, c1, c2])
-
-  useAnimationFrame((_, delta) => {
-    if (paused) return
-    const dt = Math.min(delta, 50) / 1000
-    base.current = (base.current + dt * ORBIT_SPEED) % 360
-
-    let target = base.current
-    let px = 0
-    let py = 0
-
-    const p = pointerRef.current
-    const el = frameRef.current
-    if (p.active && el) {
-      const r = el.getBoundingClientRect()
-      const dx = p.x - (r.left + r.width / 2)
-      const dy = p.y - (r.top + r.height / 2)
-      const d = Math.hypot(dx, dy) || 1
-      const reach = Math.hypot(r.width, r.height) * 0.8
-      const influence = smooth(clamp01(1 - d / reach))
-      if (influence > 0) {
-        // Pointer bearing, measured clockwise from 12 o'clock like a conic gradient.
-        const bearing = (Math.atan2(dy, dx) * 180) / Math.PI + 90
-        const away = bearing + 180 - HOT_OFFSET
-        target = base.current + angleDiff(away, base.current) * influence
-        px = (-dx / d) * influence * HALO_PUSH
-        py = (-dy / d) * influence * HALO_PUSH
-      }
-    }
-
-    // Ease toward the target so the arc glides rather than jumps.
-    const k = 1 - Math.exp(-dt / 0.45)
-    current.current += angleDiff(target, current.current) * k
-    angle.set(((current.current % 360) + 360) % 360)
-    pushX.set(px)
-    pushY.set(py)
-  })
-
-  const sweep = useMotionTemplate`conic-gradient(from 0deg, ${c1} 0deg, ${c2} 110deg, transparent 200deg, transparent 270deg, ${c1} 360deg)`
-
-  return (
-    <>
-      {/* Turbulence filter that warps the halo's edge so it ripples like water */}
-      <svg aria-hidden width="0" height="0" style={{ position: 'absolute' }}>
-        <filter id="aq-liquid" x="-25%" y="-25%" width="150%" height="150%" colorInterpolationFilters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="0.011 0.016" numOctaves="2" seed="7" result="noise">
-            {!paused && (
-              <animate
-                attributeName="baseFrequency"
-                dur="16s"
-                values="0.011 0.016;0.016 0.010;0.009 0.014;0.011 0.016"
-                repeatCount="indefinite"
-              />
-            )}
-          </feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="46" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </svg>
-
-      {/* Liquid halo: a rounded rectangle hugging the cover, blurred then warped */}
-      <motion.div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: -28,
-          borderRadius: 'calc(var(--radius-xl) + 28px)',
-          x: pushX,
-          y: pushY,
-          opacity: 0.72,
-          filter: 'blur(16px) url(#aq-liquid)',
-          pointerEvents: 'none',
-        }}
-      >
-        <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', overflow: 'hidden' }}>
-          <motion.div
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              width: '150%',
-              aspectRatio: '1',
-              marginLeft: '-75%',
-              marginTop: '-75%',
-              rotate: angle,
-              background: sweep,
-            }}
-          />
-        </div>
-      </motion.div>
-
-      {/* Hairline ring: the card's opaque face covers all but the 1.5px rim */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: -2,
-          borderRadius: 'calc(var(--radius-xl) + 2px)',
-          overflow: 'hidden',
-          pointerEvents: 'none',
-        }}
-      >
-        <motion.div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            width: '140%',
-            aspectRatio: '1',
-            marginLeft: '-70%',
-            marginTop: '-70%',
-            rotate: angle,
-            background: sweep,
-          }}
-        />
-        {/* Faint resting border so the dark arc never reads as a gap */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            borderRadius: 'inherit',
-            border: '2px solid var(--border-subtle)',
-          }}
-        />
-      </div>
-    </>
-  )
-}
-
-/* ------------------------------------------------------------------ */
 /* Slide variants. `custom` is the travel direction (+1 forward).      */
 /* ------------------------------------------------------------------ */
 const coverVariants = {
@@ -372,30 +188,6 @@ export default function Projects() {
   const hue = HUE_CYCLE[index % HUE_CYCLE.length]
   const hex = HUE_HEX[hue]
   const stageRef = useRef<HTMLDivElement>(null)
-  const sectionRef = useRef<HTMLElement>(null)
-  const frameRef = useRef<HTMLDivElement>(null)
-  const pointerRef = useRef({ x: 0, y: 0, active: false })
-  const nextHue = HUE_CYCLE[(index + 1) % HUE_CYCLE.length]
-
-  // Track the pointer across the whole section so the aura reacts before the
-  // cursor reaches the card itself.
-  useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
-    const move = (e: PointerEvent) => {
-      if (e.pointerType !== 'mouse') return
-      pointerRef.current = { x: e.clientX, y: e.clientY, active: true }
-    }
-    const leave = () => {
-      pointerRef.current.active = false
-    }
-    el.addEventListener('pointermove', move)
-    el.addEventListener('pointerleave', leave)
-    return () => {
-      el.removeEventListener('pointermove', move)
-      el.removeEventListener('pointerleave', leave)
-    }
-  }, [])
 
   const go = useCallback(
     (dir: number) => {
@@ -444,7 +236,6 @@ export default function Projects() {
 
   return (
     <section
-      ref={sectionRef}
       id="projects"
       style={{
         position: 'relative',
@@ -549,24 +340,20 @@ export default function Projects() {
               </AnimatePresence>
             </div>
 
-            {/* Cover frame, with the orbiting aura behind it */}
-            <div style={{ position: 'relative' }}>
-            <CoverAura
-              frameRef={frameRef}
-              pointerRef={pointerRef}
-              primary={hex}
-              secondary={HUE_HEX[nextHue]}
-              paused={!!reduceMotion}
-            />
-            <div
-              ref={frameRef}
+            {/* Cover frame */}
+            <motion.div
+              animate={{
+                borderColor: `${hex}55`,
+                boxShadow: `0 40px 90px -30px ${hex}66, 0 0 0 1px ${hex}14`,
+              }}
+              transition={{ duration: 0.9, ease: EASE }}
               style={{
                 position: 'relative',
                 aspectRatio: '16 / 10',
                 borderRadius: 'var(--radius-xl)',
                 overflow: 'hidden',
+                border: '1px solid var(--border-subtle)',
                 background: 'var(--ink-950)',
-                boxShadow: '0 40px 90px -40px rgba(0,0,0,0.8)',
                 cursor: 'grab',
                 touchAction: 'pan-y',
               }}
@@ -645,8 +432,7 @@ export default function Projects() {
                 Live
                 <ArrowUpRight size={12} strokeWidth={2} />
               </a>
-            </div>
-            </div>
+            </motion.div>
 
             {/* Meta column */}
             <div style={{ position: 'relative', minHeight: 260 }}>
