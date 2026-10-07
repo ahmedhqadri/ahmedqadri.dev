@@ -8,14 +8,30 @@ import { Eyebrow } from './ds/eyebrow'
 import type { Hue } from './ds/eyebrow'
 import { Reveal } from './ds/reveal'
 
-const projects = [
+type Project = {
+  title: string
+  description: string
+  technologies: string[]
+  repo?: string
+  link: string
+  image: string
+}
+
+const projects: Project[] = [
   {
-    title: "Core Demo Application",
+    title: "LaunchDarkly Demo Application",
     description: "LaunchDarkly capabilities demo showcasing feature management at scale.",
     technologies: ["Next.js", "LaunchDarkly", "AWS"],
     repo: "https://github.com/launchdarkly-labs/ld-core-demo",
     link: "https://aqadri.launchdarklydemos.com/",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-01-12%20at%202.05.02%E2%80%AFPM-lUXiV3L4eeaiblRxJSMqyc2GbboBsi.png"
+    image: "/launchdarkly-demo-app.jpg"
+  },
+  {
+    title: "ToggleStore",
+    description: "LaunchDarkly Events App built for AWS re:Invent '25.",
+    technologies: ["Next.js", "LaunchDarkly", "AWS"],
+    link: "https://togglestore.launchdarklydemos.com/",
+    image: "/togglestore-app.jpg"
   },
   {
     title: "Retail Demo App",
@@ -24,14 +40,6 @@ const projects = [
     repo: "https://github.com/ahmedhqadri/retail-demo-app",
     link: "https://github.com/ahmedhqadri/retail-demo-app",
     image: "/retail-demo-app.png"
-  },
-  {
-    title: "Insurance AI Chatbot",
-    description: "AI-powered chatbot for insurance customer queries and support.",
-    technologies: ["Next.js", "LaunchDarkly"],
-    repo: "https://github.com/ahmedhqadri/InsuranceBot",
-    link: "https://github.com/ahmedhqadri/InsuranceBot",
-    image: "/insurance-chatbot-app.png"
   },
 ]
 
@@ -52,7 +60,7 @@ const HUE_HEX: Record<Exclude<Hue, 'muted'>, string> = {
  * `Card` primitive is a text surface (it backs the Services cards), which is
  * why the earlier full-bleed version fought its clip.
  */
-function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
+function ProjectCard({ project, index }: { project: Project; index: number }) {
   const [hover, setHover] = useState(false)
   const hue = HUE_CYCLE[index % HUE_CYCLE.length]
   const hex = HUE_HEX[hue]
@@ -169,24 +177,26 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
             View project
             <ArrowUpRight size={15} strokeWidth={2} />
           </a>
-          <a
-            href={project.repo}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 'var(--text-xs)',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              color: 'var(--text-faint)',
-            }}
-          >
-            <CodeXml size={14} strokeWidth={2} />
-            Source
-          </a>
+          {project.repo && (
+            <a
+              href={project.repo}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                fontFamily: 'var(--font-mono)',
+                fontSize: 'var(--text-xs)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: 'var(--text-faint)',
+              }}
+            >
+              <CodeXml size={14} strokeWidth={2} />
+              Source
+            </a>
+          )}
         </div>
         </div>
       </article>
