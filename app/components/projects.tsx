@@ -257,34 +257,52 @@ function CoverAura({
 
   return (
     <>
-      {/* Blurred halo: a radially masked square so it reads as a soft orb */}
+      {/* Turbulence filter that warps the halo's edge so it ripples like water */}
+      <svg aria-hidden width="0" height="0" style={{ position: 'absolute' }}>
+        <filter id="aq-liquid" x="-25%" y="-25%" width="150%" height="150%" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.011 0.016" numOctaves="2" seed="7" result="noise">
+            {!paused && (
+              <animate
+                attributeName="baseFrequency"
+                dur="16s"
+                values="0.011 0.016;0.016 0.010;0.009 0.014;0.011 0.016"
+                repeatCount="indefinite"
+              />
+            )}
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="46" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
+
+      {/* Liquid halo: a rounded rectangle hugging the cover, blurred then warped */}
       <motion.div
         aria-hidden
         style={{
           position: 'absolute',
-          left: '50%',
-          top: '50%',
-          width: '140%',
-          aspectRatio: '1',
-          marginLeft: '-70%',
-          marginTop: '-70%',
+          inset: -28,
+          borderRadius: 'calc(var(--radius-xl) + 28px)',
           x: pushX,
           y: pushY,
+          opacity: 0.72,
+          filter: 'blur(16px) url(#aq-liquid)',
           pointerEvents: 'none',
         }}
       >
-        <motion.div
-          style={{
-            width: '100%',
-            height: '100%',
-            rotate: angle,
-            background: sweep,
-            opacity: 0.75,
-            filter: 'blur(38px)',
-            WebkitMaskImage: 'radial-gradient(closest-side, #000 45%, transparent 100%)',
-            maskImage: 'radial-gradient(closest-side, #000 45%, transparent 100%)',
-          }}
-        />
+        <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', overflow: 'hidden' }}>
+          <motion.div
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              width: '150%',
+              aspectRatio: '1',
+              marginLeft: '-75%',
+              marginTop: '-75%',
+              rotate: angle,
+              background: sweep,
+            }}
+          />
+        </div>
       </motion.div>
 
       {/* Hairline ring: the card's opaque face covers all but the 1.5px rim */}
