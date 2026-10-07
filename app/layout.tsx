@@ -55,9 +55,9 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${instrumentSans.variable} ${spaceMono.variable}`}
     >
       <body className="font-sans antialiased">
-        {/* Reveal-on-scroll starts at opacity 0; without JS it never fires. */}
+        {/* Scroll reveals start at opacity 0; without JS they never fire. */}
         <noscript>
-          <style>{`.aq-reveal { opacity: 1 !important; transform: none !important; }`}</style>
+          <style>{`.aq-reveal, [data-align] { opacity: 1 !important; transform: none !important; }`}</style>
         </noscript>
         {children}
         <Analytics />

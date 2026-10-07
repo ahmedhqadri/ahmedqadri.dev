@@ -8,7 +8,8 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, CodeXml } from 'lucide-react'
 import { Badge } from './ds/badge'
 import { Eyebrow } from './ds/eyebrow'
 import type { Hue } from './ds/eyebrow'
-import { EASE, Reveal } from './ds/reveal'
+import { EASE } from './ds/reveal'
+import { Align, AlignGroup, useAlignProgress } from './ds/scroll-align'
 
 type Project = {
   title: string
@@ -188,6 +189,11 @@ export default function Projects() {
   const hue = HUE_CYCLE[index % HUE_CYCLE.length]
   const hex = HUE_HEX[hue]
   const stageRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLDivElement>(null)
+  const railRef = useRef<HTMLDivElement>(null)
+  const headerAlign = useAlignProgress(headerRef)
+  const stageAlign = useAlignProgress(stageRef)
+  const railAlign = useAlignProgress(railRef)
 
   const go = useCallback(
     (dir: number) => {
@@ -255,50 +261,55 @@ export default function Projects() {
       />
 
       <div style={{ position: 'relative', maxWidth: 'var(--container-max)', margin: '0 auto' }}>
-        {/* Section header */}
-        <Reveal
-          style={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'space-between',
-            gap: 24,
-            flexWrap: 'wrap',
-            marginBottom: 'var(--space-8)',
-          }}
-        >
-          <div>
-            <Eyebrow hue={hue}>Selected work</Eyebrow>
-            <h2
-              style={{
-                margin: '16px 0 0',
-                fontFamily: 'var(--font-display)',
-                fontWeight: 500,
-                fontSize: 'var(--display-lg)',
-                letterSpacing: '-0.03em',
-                lineHeight: 1.05,
-                color: 'var(--text-strong)',
-              }}
-            >
-              Projects
-            </h2>
-          </div>
-          <p
+        {/* Section header — title slides in from the left, blurb from the right */}
+        <AlignGroup progress={headerAlign}>
+          <div
+            ref={headerRef}
             style={{
-              maxWidth: '34ch',
-              margin: 0,
-              fontFamily: 'var(--font-sans)',
-              fontSize: 'var(--text-lg)',
-              lineHeight: 1.55,
-              color: 'var(--text-muted)',
-              textWrap: 'pretty',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'space-between',
+              gap: 24,
+              flexWrap: 'wrap',
+              marginBottom: 'var(--space-8)',
             }}
           >
-            A collection of projects I&apos;ve worked on.
-          </p>
-        </Reveal>
+            <Align x={-220} rotate={-3}>
+              <Eyebrow hue={hue}>Selected work</Eyebrow>
+              <h2
+                style={{
+                  margin: '16px 0 0',
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 500,
+                  fontSize: 'var(--display-lg)',
+                  letterSpacing: '-0.03em',
+                  lineHeight: 1.05,
+                  color: 'var(--text-strong)',
+                }}
+              >
+                Projects
+              </h2>
+            </Align>
+            <Align x={220} lag={0.2}>
+              <p
+                style={{
+                  maxWidth: '34ch',
+                  margin: 0,
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: 'var(--text-lg)',
+                  lineHeight: 1.55,
+                  color: 'var(--text-muted)',
+                  textWrap: 'pretty',
+                }}
+              >
+                A collection of projects I&apos;ve worked on.
+              </p>
+            </Align>
+          </div>
+        </AlignGroup>
 
-        {/* Stage */}
-        <Reveal y={48} scale={0.96}>
+        {/* Stage — cover and meta converge from opposite sides */}
+        <AlignGroup progress={stageAlign}>
           <div
             ref={stageRef}
             tabIndex={0}
@@ -326,116 +337,120 @@ export default function Projects() {
                 pointerEvents: 'none',
               }}
             >
-              <AnimatePresence mode="popLayout" initial={false}>
-                <motion.span
-                  key={index}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -24 }}
-                  transition={{ duration: 0.6, ease: EASE }}
-                  style={{ display: 'block' }}
-                >
-                  {pad(index)}
-                </motion.span>
-              </AnimatePresence>
+              <Align y={-140} lag={0.4}>
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={index}
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -24 }}
+                    transition={{ duration: 0.6, ease: EASE }}
+                    style={{ display: 'block' }}
+                  >
+                    {pad(index)}
+                  </motion.span>
+                </AnimatePresence>
+              </Align>
             </div>
 
             {/* Cover frame */}
-            <motion.div
-              animate={{
-                borderColor: `${hex}55`,
-                boxShadow: `0 40px 90px -30px ${hex}66, 0 0 0 1px ${hex}14`,
-              }}
-              transition={{ duration: 0.9, ease: EASE }}
-              style={{
-                position: 'relative',
-                aspectRatio: '16 / 10',
-                borderRadius: 'var(--radius-xl)',
-                overflow: 'hidden',
-                border: '1px solid var(--border-subtle)',
-                background: 'var(--ink-950)',
-                cursor: 'grab',
-                touchAction: 'pan-y',
-              }}
-            >
-              <AnimatePresence custom={direction} initial={false} mode="popLayout">
-                <motion.div
-                  key={index}
-                  custom={direction}
-                  {...motionProps(coverVariants)}
-                  transition={{ duration: 0.7, ease: EASE }}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.12}
-                  onDragEnd={onDragEnd}
-                  whileDrag={{ cursor: 'grabbing' }}
-                  style={{ position: 'absolute', inset: 0 }}
-                >
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    priority={index === 0}
-                    sizes="(max-width: 1024px) 100vw, 60vw"
-                    draggable={false}
-                    style={{ objectFit: 'cover', objectPosition: 'top' }}
-                  />
-                  {/* Bottom veil so the overlay chip reads on bright screenshots */}
-                  <div
-                    aria-hidden
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background:
-                        'linear-gradient(180deg, rgba(6,9,13,0) 55%, rgba(6,9,13,0.55) 100%)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Live chip */}
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="aq-glass"
-                aria-label={`Open ${project.title}`}
+            <Align x={-280} rotate={-5} scale={0.9}>
+              <motion.div
+                animate={{
+                  borderColor: `${hex}55`,
+                  boxShadow: `0 40px 90px -30px ${hex}66, 0 0 0 1px ${hex}14`,
+                }}
+                transition={{ duration: 0.9, ease: EASE }}
                 style={{
-                  position: 'absolute',
-                  left: 18,
-                  bottom: 18,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '8px 14px 8px 12px',
-                  borderRadius: 'var(--radius-pill)',
-                  border: '1px solid var(--border-strong)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 'var(--text-2xs)',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: 'var(--text-strong)',
-                  textDecoration: 'none',
+                  position: 'relative',
+                  aspectRatio: '16 / 10',
+                  borderRadius: 'var(--radius-xl)',
+                  overflow: 'hidden',
+                  border: '1px solid var(--border-subtle)',
+                  background: 'var(--ink-950)',
+                  cursor: 'grab',
+                  touchAction: 'pan-y',
                 }}
               >
-                <span
-                  aria-hidden
+                <AnimatePresence custom={direction} initial={false} mode="popLayout">
+                  <motion.div
+                    key={index}
+                    custom={direction}
+                    {...motionProps(coverVariants)}
+                    transition={{ duration: 0.7, ease: EASE }}
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.12}
+                    onDragEnd={onDragEnd}
+                    whileDrag={{ cursor: 'grabbing' }}
+                    style={{ position: 'absolute', inset: 0 }}
+                  >
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      priority={index === 0}
+                      sizes="(max-width: 1024px) 100vw, 60vw"
+                      draggable={false}
+                      style={{ objectFit: 'cover', objectPosition: 'top' }}
+                    />
+                    {/* Bottom veil so the overlay chip reads on bright screenshots */}
+                    <div
+                      aria-hidden
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background:
+                          'linear-gradient(180deg, rgba(6,9,13,0) 55%, rgba(6,9,13,0.55) 100%)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Live chip */}
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="aq-glass"
+                  aria-label={`Open ${project.title}`}
                   style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
-                    background: hex,
-                    boxShadow: `0 0 10px ${hex}`,
+                    position: 'absolute',
+                    left: 18,
+                    bottom: 18,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '8px 14px 8px 12px',
+                    borderRadius: 'var(--radius-pill)',
+                    border: '1px solid var(--border-strong)',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'var(--text-2xs)',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'var(--text-strong)',
+                    textDecoration: 'none',
                   }}
-                />
-                Live
-                <ArrowUpRight size={12} strokeWidth={2} />
-              </a>
-            </motion.div>
+                >
+                  <span
+                    aria-hidden
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      background: hex,
+                      boxShadow: `0 0 10px ${hex}`,
+                    }}
+                  />
+                  Live
+                  <ArrowUpRight size={12} strokeWidth={2} />
+                </a>
+              </motion.div>
+            </Align>
 
             {/* Meta column */}
-            <div style={{ position: 'relative', minHeight: 260 }}>
+            <Align x={240} lag={0.2} style={{ position: 'relative', minHeight: 260 }}>
               <AnimatePresence custom={direction} initial={false} mode="wait">
                 <motion.div
                   key={index}
@@ -572,13 +587,14 @@ export default function Projects() {
                   </motion.div>
                 </motion.div>
               </AnimatePresence>
-            </div>
+            </Align>
           </div>
-        </Reveal>
+        </AlignGroup>
 
-        {/* Controls rail */}
-        <Reveal delay={0.15}>
+        {/* Controls rail — progress from the left, arrows from the right */}
+        <AlignGroup progress={railAlign}>
           <div
+            ref={railRef}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -590,44 +606,46 @@ export default function Projects() {
             }}
           >
             {/* Segmented progress: click a segment to jump. */}
-            <div role="tablist" aria-label="Choose project" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {projects.map((p, i) => {
-                const active = i === index
-                return (
-                  <button
-                    key={p.title}
-                    type="button"
-                    role="tab"
-                    aria-selected={active}
-                    aria-label={`${pad(i)} ${p.title}`}
-                    onClick={() => jump(i)}
-                    style={{
-                      padding: '10px 0',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <motion.span
-                      animate={{
-                        width: active ? 44 : 14,
-                        background: active ? hex : 'rgba(255,255,255,0.18)',
+            <Align x={-180}>
+              <div role="tablist" aria-label="Choose project" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {projects.map((p, i) => {
+                  const active = i === index
+                  return (
+                    <button
+                      key={p.title}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      aria-label={`${pad(i)} ${p.title}`}
+                      onClick={() => jump(i)}
+                      style={{
+                        padding: '10px 0',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
                       }}
-                      whileHover={{ background: active ? hex : 'rgba(255,255,255,0.4)' }}
-                      transition={{ duration: 0.45, ease: EASE }}
-                      style={{ display: 'block', height: 2, borderRadius: 2 }}
-                    />
-                  </button>
-                )
-              })}
-            </div>
+                    >
+                      <motion.span
+                        animate={{
+                          width: active ? 44 : 14,
+                          background: active ? hex : 'rgba(255,255,255,0.18)',
+                        }}
+                        whileHover={{ background: active ? hex : 'rgba(255,255,255,0.4)' }}
+                        transition={{ duration: 0.45, ease: EASE }}
+                        style={{ display: 'block', height: 2, borderRadius: 2 }}
+                      />
+                    </button>
+                  )
+                })}
+              </div>
+            </Align>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Align x={180} lag={0.2} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <NavButton direction={-1} hue={hex} onAdvance={() => go(-1)} />
               <NavButton direction={1} hue={hex} onAdvance={() => go(1)} />
-            </div>
+            </Align>
           </div>
-        </Reveal>
+        </AlignGroup>
       </div>
     </section>
   )

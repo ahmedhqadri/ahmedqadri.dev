@@ -1,8 +1,9 @@
 "use client"
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion } from 'framer-motion'
 import { Eyebrow } from './ds/eyebrow'
-import { EASE, Reveal } from './ds/reveal'
+import { Align, AlignGroup, useAlignProgress } from './ds/scroll-align'
 
 const skills = [
   "JavaScript", "TypeScript", "React", "Next.js", "Node.js",
@@ -11,49 +12,55 @@ const skills = [
   "Microservices", "CI/CD", "Docker", "Kubernetes", "Testing", "Agile",
 ]
 
-/* Chips cascade in a quick wave once the wall scrolls into view. */
-const chipWall = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.03 } },
+/*
+ * Chips start strewn around the wall and fly into their slots as it scrolls
+ * to the centre. Golden-angle spacing spreads them evenly in every direction;
+ * the other values are cheap deterministic jitter so the layout is stable.
+ */
+function scatter(i: number) {
+  const angle = i * 2.39996
+  const radius = 240 + ((i * 53) % 180)
+  return {
+    x: Math.round(Math.cos(angle) * radius),
+    y: Math.round(Math.sin(angle) * radius * 0.6),
+    rotate: ((i * 47) % 36) - 18,
+    lag: ((i * 0.37) % 1) * 0.6,
+  }
 }
 
-const chip = {
-  hidden: { opacity: 0, y: 14, scale: 0.94 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: EASE } },
-}
-
-function SkillChip({ name }: { name: string }) {
+function SkillChip({ name, index }: { name: string; index: number }) {
   return (
-    <motion.span
-      variants={chip}
-      whileHover={{ y: -2 }}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        padding: '10px 18px',
-        borderRadius: 'var(--radius-pill)',
-        border: '1px solid var(--border-subtle)',
-        background: 'var(--surface-raised)',
-        fontFamily: 'var(--font-mono)',
-        fontSize: 'var(--text-xs)',
-        letterSpacing: '0.08em',
-        textTransform: 'uppercase',
-        color: 'var(--text-muted)',
-        whiteSpace: 'nowrap',
-        transition:
-          'color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out)',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.color = 'var(--text-strong)'
-        e.currentTarget.style.borderColor = 'var(--aqua-600)'
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.color = 'var(--text-muted)'
-        e.currentTarget.style.borderColor = 'var(--border-subtle)'
-      }}
-    >
-      {name}
-    </motion.span>
+    <Align as="span" scale={0.6} {...scatter(index)}>
+      <motion.span
+        whileHover={{ y: -2 }}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding: '10px 18px',
+          borderRadius: 'var(--radius-pill)',
+          border: '1px solid var(--border-subtle)',
+          background: 'var(--surface-raised)',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 'var(--text-xs)',
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          color: 'var(--text-muted)',
+          whiteSpace: 'nowrap',
+          transition:
+            'color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--text-strong)'
+          e.currentTarget.style.borderColor = 'var(--aqua-600)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = 'var(--text-muted)'
+          e.currentTarget.style.borderColor = 'var(--border-subtle)'
+        }}
+      >
+        {name}
+      </motion.span>
+    </Align>
   )
 }
 
@@ -62,7 +69,10 @@ function SkillChip({ name }: { name: string }) {
  * dark-forward page its contrast beat.
  */
 export default function Skills() {
-  const reduceMotion = useReducedMotion()
+  const headerRef = useRef<HTMLDivElement>(null)
+  const wallRef = useRef<HTMLDivElement>(null)
+  const headerAlign = useAlignProgress(headerRef)
+  const wallAlign = useAlignProgress(wallRef)
 
   return (
     <section
@@ -94,43 +104,46 @@ export default function Skills() {
       />
 
       <div style={{ position: 'relative', maxWidth: 'var(--container-max)', margin: '0 auto' }}>
-        <Reveal style={{ textAlign: 'center', maxWidth: '40ch', margin: '0 auto var(--space-8)' }}>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Eyebrow hue="indigo">What I work with</Eyebrow>
+        <AlignGroup progress={headerAlign}>
+          <div ref={headerRef} style={{ textAlign: 'center', maxWidth: '40ch', margin: '0 auto var(--space-8)' }}>
+            <Align x={-200} lag={0.25} style={{ display: 'flex', justifyContent: 'center' }}>
+              <Eyebrow hue="indigo">What I work with</Eyebrow>
+            </Align>
+            <Align x={200} rotate={3}>
+              <h2
+                style={{
+                  margin: '16px 0 0',
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 500,
+                  fontSize: 'var(--display-lg)',
+                  letterSpacing: '-0.03em',
+                  lineHeight: 1.05,
+                  color: 'var(--text-strong)',
+                }}
+              >
+                Skills &amp; Tools
+              </h2>
+            </Align>
           </div>
-          <h2
+        </AlignGroup>
+
+        <AlignGroup progress={wallAlign}>
+          <div
+            ref={wallRef}
             style={{
-              margin: '16px 0 0',
-              fontFamily: 'var(--font-display)',
-              fontWeight: 500,
-              fontSize: 'var(--display-lg)',
-              letterSpacing: '-0.03em',
-              lineHeight: 1.05,
-              color: 'var(--text-strong)',
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: 12,
+              maxWidth: 900,
+              margin: '0 auto',
             }}
           >
-            Skills &amp; Tools
-          </h2>
-        </Reveal>
-
-        <motion.div
-          variants={chipWall}
-          initial={reduceMotion ? false : 'hidden'}
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: 12,
-            maxWidth: 900,
-            margin: '0 auto',
-          }}
-        >
-          {skills.map((skill) => (
-            <SkillChip key={skill} name={skill} />
-          ))}
-        </motion.div>
+            {skills.map((skill, i) => (
+              <SkillChip key={skill} name={skill} index={i} />
+            ))}
+          </div>
+        </AlignGroup>
       </div>
     </section>
   )

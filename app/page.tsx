@@ -13,7 +13,7 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState('top')
 
   // Parallax is the signature: [data-depth] layers translate on scroll.
-  // Section reveals are Framer Motion (`Reveal` in ds/reveal) on this page;
+  // Sections assemble and scatter with scroll (`Align` in ds/scroll-align);
   // the CSS `.aq-reveal` pattern remains for the doc pages.
   useParallax()
 
