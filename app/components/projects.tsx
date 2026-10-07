@@ -81,7 +81,11 @@ function NavButton({
     <motion.button
       type="button"
       aria-label={label}
-      onClick={onAdvance}
+      onClick={() => {
+        onAdvance()
+        // A click restarts the dwell ring from zero instead of continuing the partial fill.
+        setCycle((c) => c + 1)
+      }}
       onPointerEnter={(e) => {
         if (e.pointerType === 'mouse') setHovered(true)
       }}
