@@ -32,7 +32,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     label: 'Photography',
-    href: 'https://vsco.co/aqlens',
+    href: 'https://photography.ahmedqadri.dev',
     icon: <Aperture size={18} strokeWidth={2} />,
   },
 ]
